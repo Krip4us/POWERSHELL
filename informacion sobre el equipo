@@ -1,0 +1,190 @@
+########################################################
+########################################################
+
+#informacion del equipo
+#toda la informacion del ordenador:
+
+Get-CimInstance -ClassName Win32_Desktop
+Get-CimInstance -ClassName Win32_Processor | Select-Object -ExcludeProperty "CIM*"
+Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property SystemType
+Get-CimInstance -ClassName Win32_ComputerSystem
+Get-CimInstance -ClassName Win32_QuickFixEngineering
+Get-CimInstance -ClassName Win32_LogonSession
+Get-CimInstance -ClassName Win32_Service | Format-Table -Property Status,Name,DisplayName -AutoSize -Wrap
+--------------------
+#recopilar informacion del equipo cada mes
+
+$day= (Get-Date).day
+$mes = 1
+
+    $find = "C:\Users\Admin\Desktop\DATOS\11"
+    $Existe = Test-Path $find
+
+    If ($Existe -eq $True) {
+       Write-Host "Existe!CUIDADO"    
+ break
+cd..}
+    Else {
+       Write-Host "NO SE ENCUENTRA EL FICHERO" (Get-Date).Month
+    }
+
+mkdir (Get-Date).Month
+    cd (Get-Date).Month
+while(1){
+
+   
+Start-Sleep -Seconds 5
+    Get-WmiObject -Class win32_share | Out-File win32-share.txt 
+    Get-Service "*" | Sort-Object status | Out-File service-status.txt($day)
+    Get-Disk | Sort-Object FriendlyName | Out-File disk.txt
+    Get-Service *virus | Out-File services.txt
+    Start-Sleep -Seconds (5)
+        Get-Content .\service-status.txt
+    Start-Sleep -Seconds (5)
+        Get-Content .\win32-share.txt
+    Start-Sleep -Seconds (5)
+        Get-Content .\services.txt
+    
+
+
+Start-Sleep -Seconds (3600*24*30)
+
+mkdir (Get-Date).AddMonths(1).Month
+
+mkdir .NETsys
+cd .\.NETsys
+(Get-WmiObject Win32_OperatingSystem).CSName | Out-File systemCSNAME.txt
+(Get-WmiObject Win32_OperatingSystem).name | Out-File systemNAME.txt
+
+Get-WmiObject -Class win32_logicaldisk| Format-List | Out-File myDISKS.txt
+gwmi win32_service | where {$_.StartMode -ne “Disabled”} | select name,state | format-list | Out-File ServicesWELL.txt
+Get-WmiObject -class "Win32_Processor" | select status | Out-File Processor.txt
+--------
+#recopilar informacion del equipo mediante objetos de dialogo
+
+#operating system information
+Get-WmiObject -class "Win32_OperatingSystem" | % {
+    Write-Host "SystemDirectory: "
+    Write-Host $_.SystemDirectory
+   
+    Write-Host "Organization: "
+    Write-Host $_.Organization
+
+    Write-Host "BuildNumber: "
+    Write-Host $_.BuildNumber
+
+    Write-Host "RegisteredUser: "
+    Write-Host $_.RegisteredUser
+
+    Write-Host "Version : "
+    Write-Host $_.Version 
+    Write-Host
+}
+    Start-Sleep -Seconds 5
+#operating Disks information
+Get-WmiObject -class "win32_logicaldisk" | % {
+    Write-Host "DeviceID: "
+    Write-Host $_.DeviceID
+   
+    Write-Host "FreeSpace : "
+    Write-Host $_.FreeSpace 
+   
+    Write-Host "Name: "
+    Write-Host $_.VolumeName
+    
+    Write-Host "RegisteredUser: "
+    Write-Host $_.RegisteredUser
+    
+    Write-Host "Version : "
+    Write-Host $_.Version 
+    Write-Host
+    
+}
+    Start-Sleep -Seconds 5
+#operating services information
+Get-WmiObject -class "win32_service" | % {
+   
+    Write-Host "Name: "
+    Write-Host $_.Name
+   
+    Write-Host "Id : "
+    Write-Host $_.ProcessId 
+   
+    Write-Host "StartMode: " 
+    Write-Host $_.StartMode
+    
+    Write-Host "State: "
+    Write-Host $_.State
+    
+    Write-Host "Status : "
+    Write-Host $_.Status 
+    Write-Host
+    
+}
+}
+cd..
+cd..
+cd..
+    break
+---------------
+#recopilar informacion mediante cuadros de opciones
+
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+$form = New-Object System.Windows.Forms.Form
+$form.Text = 'Data Entry Form'
+$form.Size = New-Object System.Drawing.Size(400,300)
+$form.StartPosition = 'CenterScreen'
+
+$system = New-Object System.Windows.Forms.Button
+$system.Location = New-Object System.Drawing.Point(10,120)
+$system.Size = New-Object System.Drawing.Size(75,23)
+$system.Text = 'system'
+$system.DialogResult = [System.Windows.Forms.DialogResult]::Yes
+$form.AcceptButton = $system
+$form.Controls.Add($system)
+
+
+$OKButton = New-Object System.Windows.Forms.Button
+$OKButton.Location = New-Object System.Drawing.Point(75,120)
+$OKButton.Size = New-Object System.Drawing.Size(75,23)
+$OKButton.Text = 'info'
+$OKButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
+$form.AcceptButton = $OKButton
+$form.Controls.Add($OKButton)
+
+$CancelButton = New-Object System.Windows.Forms.Button
+$CancelButton.Location = New-Object System.Drawing.Point(150,120)
+$CancelButton.Size = New-Object System.Drawing.Size(75,23)
+$CancelButton.Text = 'servicios'
+$CancelButton.DialogResult = [System.Windows.Forms.DialogResult]::No
+$form.CancelButton = $CancelButton
+$form.Controls.Add($CancelButton)
+
+$form.Topmost = $true
+
+$form.Add_Shown({$textBox.Select()})
+$result = $form.ShowDialog()
+
+$date = (Get-WmiObject -Class win32_service | Sort-Object name).name
+if ($result -eq [System.Windows.Forms.DialogResult]::OK)
+{
+    $x = $date
+    $x
+}
+
+$servicios = (Get-WmiObject -Class win32_processor | Sort-Object name).name
+[System.Windows.Forms.DialogResult]::Cancel
+if ($result -eq [System.Windows.Forms.DialogResult]::No)
+{
+    $S = $servicios
+    $S
+}
+
+$system = (Get-WmiObject Win32_OperatingSystem).name
+if ($result -eq [System.Windows.Forms.DialogResult]::Yes)
+{
+    $R = $system
+    $R
+}
