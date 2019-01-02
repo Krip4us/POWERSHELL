@@ -1,0 +1,16 @@
+#mostar el fabricante de la placa base
+    (Get-WmiObject Win32_BaseBoard).Manufacturer
+#mostrar el numero de procesadores
+    Get-WmiObject -Class Win32_Processor | Select-Object NumberOfCores
+#mostar informacion general del equipo
+    Get-CimInstance -ClassName Win32_ComputerSystem 
+#mostar informacion general de la placa base
+    wmic baseboard get product,Manufacturer,version,serialnumber
+#mostar informacion de la memoria
+    Get-WmiObject -class win32_logicaldisk
+#mostar capacidad de la memoria RAM
+    Get-CIMInstance Win32_physicalmemory | Select Capacity
+#mostar toda la informacion de la memoria RAM
+    Get-CIMInstance Win32_physicalmemory
+#mostar informacion de la bateria
+    Get-WmiObject Win32_Battery
