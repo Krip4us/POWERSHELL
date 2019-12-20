@@ -1,3 +1,4 @@
+```PowerShell
 cd $env:SystemDrive\
 $random = Get-Random -Maximum 100 -Minimum 1 
 $random
@@ -57,7 +58,7 @@ function action{
         "-------------------------------------------"
     Get-WmiObject Win32_PhysicalMemory | Select-Object MinVoltage| Out-File MinVoltage.sys
         "-------------------------------------------" 
-    Get-WmiObject -Query "select * from win32_service where name='WinRM'" -ComputerName ASUS-DC001 | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
+    Get-WmiObject -Query "select * from win32_service where name='WinRM'" -ComputerName $env:COMPUTERNAME | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
         "-------------------------------------------"
 
     }
@@ -79,3 +80,4 @@ else {
     Write-Host 'checker complete but not compressed' -ForegroundColor Red
     Start-Sleep -Seconds 6;exit
 }
+```
