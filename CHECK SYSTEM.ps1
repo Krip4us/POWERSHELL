@@ -1,4 +1,3 @@
-```PowerShell
 cd $env:SystemDrive\
 $random = Get-Random -Maximum 100 -Minimum 1 
 $random
@@ -80,4 +79,3 @@ else {
     Write-Host 'checker complete but not compressed' -ForegroundColor Red
     Start-Sleep -Seconds 6;exit
 }
-```
