@@ -1,5 +1,4 @@
 #TENEIS QUE TENER HABILITADO LA EJECUCION DE SCRIPTS ==> start-process powershell{Set-ExecutionPolicy Unrestricted}-verb runas
-#TENEIS QUE TENER HABILITADO LA EJECUCION DE SCRIPTS ==> start-process powershell{Set-ExecutionPolicy Unrestricted}-verb runas
 if (!(Test-Path -Path $Profile.CurrentUserAllHosts)) {
     Write-Host "file exist"
 }
