@@ -1,4 +1,5 @@
 #TENEIS QUE TENER HABILITADO LA EJECUCION DE SCRIPTS ==> start-process powershell{Set-ExecutionPolicy Unrestricted}-verb runas
+#TENEIS QUE TENER HABILITADO LA EJECUCION DE SCRIPTS ==> start-process powershell{Set-ExecutionPolicy Unrestricted}-verb runas
 if (!(Test-Path -Path $Profile.CurrentUserAllHosts)) {
     Write-Host "file exist"
 }
@@ -18,7 +19,6 @@ Write-Host "
             HELP COMMANDS    ==>  commands
 #######################################################
 " -ForegroundColor GREEN ;
-
 date >>"LastAccessTime"
 function tras{
     Remove-Item "LastAccessTime" -Force
@@ -131,13 +131,10 @@ function check{
         
         }
         Get_Date | out-file CHECKER.log
-        
         function LastLog{
-            $Sorter+"-"+$datesort+" | Out-File "LastCheck.log"
+            $Sorter+"-"+$datesort| Out-File "LastCheck.log"
         }
         LastLog
-        
-        ##############################################################################
         function Check{
             Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys
             systeminfo.exe | Out-File systeminfo.sys
@@ -185,9 +182,9 @@ function check{
         Compress-Archive -Path  "$env:COMPUTERNAME;INFO;$random" -DestinationPath  "$env:COMPUTERNAME;INFO;$random.zip";
         if ((Test-Path "$env:COMPUTERNAME;INFO;$random.zip")-eq "True") {
             rmdir "$env:COMPUTERNAME;INFO;$random" -Recurse -Force;
-        "________________________________________________________________________________________________"
+
         Write-Host "CHECKER FINISH COMPLETE!!" -ForegroundColor Green
-        "________________________________________________________________________________________________"
+
         exit
         }
         else {
@@ -282,5 +279,4 @@ function commands{
         "ipview" = "see ip public"
     }
 }
-
 '| Add-Content -Path $Profile.CurrentUserAllHosts -Encoding Default
