@@ -1,4 +1,4 @@
-#Para poder utilizar el fichero del perfil es necesario habilitar la ejecución de scripts
+#TENEIS QUE TENER HABILITADO LA EJECUCION DE SCRIPTS ==> start-process powershell{Set-ExecutionPolicy Unrestricted}-verb runas
 if (!(Test-Path -Path $Profile.CurrentUserAllHosts)) {
     Write-Host "file exist"
 }
@@ -111,18 +111,6 @@ function findex{
 }
 function check{
     function checkerPS1{
-        function info {
-            [ordered]@{
-                "AUTOR" = "https://github.com/Krip4us"
-                "NOMBRE DEL PROGRAMA" = "CHECKER.ps1"
-                "version" = "2.0.5.1"
-                "PERTENENCIA" = "files.programing.codes.lion.powershell"
-                "DOMINIO" = "asusyred.local.es"
-                "ULTIMA MODIFICACION" = "23/11/19"
-                "PLAZO GASTADO" =  "5meses (12/06/19)"
-            }   |Out-GridView 
-        }
-        cd \\Asus-dc001\nuxeo\FileHistory
         $random = Get-Random -Maximum 100 -Minimum 1 
         $random
         ni -ItemType Directory -Name "$env:COMPUTERNAME;INFO;$random" -ErrorAction SilentlyContinue ; cd "$env:COMPUTERNAME;INFO;$random"
@@ -145,8 +133,7 @@ function check{
         Get_Date | out-file CHECKER.log
         
         function LastLog{
-            $Sorter+"-"+$datesort+"
-            File Number=>"+"$random ;;>\\Asus-dc001\public-downloads\powershell;;>NUXEO(G:\FileHistory) " | Out-File "\\Asus-dc001\public-downloads\LastCheck.log"
+            $Sorter+"-"+$datesort+" | Out-File "LastCheck.log"
         }
         LastLog
         
@@ -295,4 +282,5 @@ function commands{
         "ipview" = "see ip public"
     }
 }
+
 '| Add-Content -Path $Profile.CurrentUserAllHosts -Encoding Default
