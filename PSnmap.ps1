@@ -450,19 +450,6 @@ function Invoke-PSipcalc {
         [switch] $Enumerate
     )
 
-    # PowerShell ipcalc clone: PSipcalc.
-    # Copyright (c), 2015, Svendsen Tech
-    # All rights reserved.
-
-    ## Author: Joakim Svendsen
-
-    # MIT license.
-
-    # Original release 2015-07-13 (ish) v1.0 (or whatever...)
-    # 2015-07-16: v1.2. Standardized the TotalHosts and UsableHosts properties to always be of the type int64.
-    # Formely TotalHosts was a string, except for network lengths of 30-32, when it was an int32. UsableHosts used to be int32.
-
-    # 2015-07-15: Added -Contains and fixed some comment bugs(!) plus commented a bit more and made minor tweaks. v1.1, I guess.
 
     Set-StrictMode -Version Latest
     $ErrorActionPreference = 'Stop'
