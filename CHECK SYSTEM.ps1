@@ -1,6 +1,6 @@
-cd $env:SystemDrive\
+cd $env:HOMEPATH
 $random = Get-Random -Maximum 100 -Minimum 1 
-$random
+Write-Host $random -ForegroundColor Red
 ni -ItemType Directory -Name "$env:COMPUTERNAME;INFO;$random" -ErrorAction SilentlyContinue ; cd "$env:COMPUTERNAME;INFO;$random"
 
 function Get_Date{
@@ -35,7 +35,7 @@ function Check{
     $wc = new-object System.Net.Webclient
     $wc.DownloadString("http://icanhazip.com/") | Out-File IPv6.sys
     nslookup myip.opendns.com resolver1.opendns.com | Out-File NsLookup.sys
-    ipconfig.exe /displaydns
+    ipconfig.exe /displaydns | Out-File displaydns.sys
     Get-NetAdapterBinding -Name 'USB-ETH1','Ethernet 2' |Sort-Object -Property Enabled -CaseSensitive | Out-File 'Get-NetAdapterBinding.sys'
     Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\' | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File 'USBSTOR.sys'
     Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys
@@ -55,7 +55,7 @@ function action{
         "-------------------------------------------"
     Get-WmiObject Win32_PhysicalMemory | Select-Object ConfiguredClockSpeed| Out-File ConfiguredClockSpeed.sys
         "-------------------------------------------"
-    Get-WmiObject Win32_PhysicalMemory | Select-Object MinVoltage| Out-File MinVoltage.sys
+    Get-WmiObject Win32_PhysicalMemory | Select-Object Speed| Out-File Speed.sys
         "-------------------------------------------" 
     Get-WmiObject -Query "select * from win32_service where name='WinRM'" -ComputerName $env:COMPUTERNAME | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
         "-------------------------------------------"
