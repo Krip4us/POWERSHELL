@@ -1,9 +1,6 @@
-````powershell
-#structure={
+
 $x = PSnmap -Cn 192.168.1.1/24, ASUS-DC001,serv04,HIBeenPWD-pc -Port 22,3389,80,443 -Dns #-Verbose
 $x | Where { $_.Ping } | Format-Table -AutoSize
-}
-
 
 #requires -version 2
 <#
@@ -12,18 +9,7 @@ Linux nmap for PowerShell (almost).
 Ping sweeps and scans a network for specified open ports. Can also perform DNS lookups.
 Port connect timeout is custom (milliseconds).
 Multithreaded with a default of 32 concurrent threads.
- 
-If you get over about 20-25,000 threads, you'll experience significant slowdowns
-towards the end, so avoiding that is recommended. This number may vary in your environment.
- 
-Svendsen Tech.
-Copyright (c) 2015, Joakim Borger Svendsen. All rights reserved.
- 
-MIT license. http://www.opensource.org/licenses/MIT
- 
-Homepage/documentation:
-https://www.powershelladmin.com/wiki/Port_scan_subnets_with_PSnmap_for_PowerShell
- 
+
 .PARAMETER ComputerName
 List of CIDR, IP/subnet, IP or DNS/NetBIOS name.
 .PARAMETER PORT
@@ -603,10 +589,7 @@ function Invoke-PSipcalc {
             {
                 return # warning displayed by Convert-IPToBinary, nothing here
             }
-            # Some validation of the binary form of the subnet mask,
-            # to check that there aren't ones after a zero has occurred (invalid subnet mask).
-            # Strip all leading ones, which means you either eat 32 1s and go to the end (255.255.255.255),
-            # or you hit a 0, and if there's a 1 after that, we've got a broken subnet mask, amirite.
+
             if ((($BinarySubnetMask) -replace '\A1+') -match '1')
             {
                 Write-Warning -Message "Invalid subnet mask in CIDR string '$CIDRString'. Subnet mask: '$SubnetMask'."
@@ -699,8 +682,7 @@ function Invoke-PSipcalc {
         {
             $o.HostMin = Convert-BinaryToIP -Binary ([System.Convert]::ToString(([System.Convert]::ToInt64($o.BinaryNetworkAddress, 2) + 1), 2)).PadLeft(32, '0')
         }
-        #$o.HostMax = Convert-BinaryToIP ([System.Convert]::ToString((([System.Convert]::ToInt64($o.BinaryNetworkAddress.SubString(0, $o.NetworkLength)).PadRight(32, '1'), 2) - 1), 2).PadLeft(32, '0'))
-        #$o.HostMax =
+
         [String] $BinaryBroadcastIP = $o.BinaryNetworkAddress.SubString(0, $o.NetworkLength).PadRight(32, '1') # this gives broadcast... need minus one.
         $o.BinaryBroadcast = $BinaryBroadcastIP
         [Decimal] $DecimalHostMax = [System.Convert]::ToInt64($BinaryBroadcastIP, 2) - 1
@@ -710,7 +692,9 @@ function Invoke-PSipcalc {
             ([System.Convert]::ToInt64($BinaryBroadcastIP, 2) - [System.Convert]::ToInt64($o.BinaryNetworkAddress, 2) + 1)
         )
         $o.UsableHosts = $o.TotalHosts - 2
-        # ugh, exceptions for network lengths from 30..32
+
+
+
         if ($o.NetworkLength -eq 32)
         {
             $o.Broadcast = $Null
@@ -766,5 +750,5 @@ New-Alias -Name PSnmap -Value Invoke-PSnmap -Description 'PowerShell nmap' `
 New-Alias -Name PSipcalc -Value Invoke-PSipcalc -Description 'PowerShell ipcalc' `
     -Scope Global -ErrorAction SilentlyContinue
 
-#Export-ModuleMember -Function Invoke-PSnmap, Invoke-PSipcalc # now handled in manifest
-````powershell
+#Export-ModuleMember -Function Invoke-PSnmap, Invoke-PSipcalc 
+
