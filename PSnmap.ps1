@@ -100,21 +100,7 @@ function Invoke-PSnmap {
         # Add IANA service for the port number in parentheses.
         [Switch] $AddService)
         #[Switch] $UpdateServicesFromIANA)
-    
-    # PowerShell nmap-ish clone for Windows.
-    # Copyright (c) 2015, Svendsen Tech, All rights reserved.
-    # Author: Joakim Borger Svendsen
-    # Runspace "framework" borrowed and adapted from Zachary Loeber's work.
-    # BSD 3-clause license - http://www.opensource.org/licenses/BSD-3-Clause
-    
-    # July 20, 2015. beta1
-    
-    # August 6, 2016, beta2.
-    # "Change history": Added sorting of results correctly by IP/computername using some cleverness.
-    # Added throttling of pings since it seemed to be in an infinite loop once during testing,
-    # and this made that go away. Seeing some inconsistencies when testing (port 80 on the router
-    # reported as closed on one scan, open on the next).
-    # Changed so multiple IPs or DNS names are in an array rather than a semicolon-joined string.
+
     
     Set-StrictMode -Version Latest
     $MyEAP = "Stop"
@@ -189,15 +175,7 @@ function Invoke-PSnmap {
             # It looks like it's "successful" even when it isn't, for any practical purposes (pass in IP, get IP as .HostName)...
             if ($Result)
             {
-                ## This is a best-effort attempt at handling things flexibly.
-                ##
-                # I think this should mostly work... If I pass in an IPv4 address that doesn't
-                # resolve to a host name, the same IP seems to be used to populate the HostName property.
-                # So this means that you'll get the IP address twice for IPs that don't resolve, but
-                # it will still say it resolved. For IPs that do resolve to a host name, you will
-                # correctly get the host name in the IP/DNS column. For host names or IPs that resolve to
-                # one or more IP addresses, you will get the IPs joined together with semicolons.
-                # Both IPv6 and IPv4 may be reported depending on your environment.
+
                 if ($HostEntry.HostName.Split('.')[0] -ieq $Computer.Split('.')[0])
                 {
                     $IPDns = @($HostEntry | Select-Object -Expand AddressList |
@@ -322,9 +300,7 @@ function Invoke-PSnmap {
             }
         }
     )
-    # Do a ping scan using the same thread engine as later, but don't run Get-Result.
-    # We sort of need some type of feedback even without Write-Verbose at this step...
-    # Abandoned support for pipeline input (I'm guessing "who cares" about that 99 % of the time with this script).
+
     Write-Verbose -Message "$(Get-Date): Doing a ping sweep. Please wait."
     foreach ($Computer in $AllComputerName)
     {
@@ -466,24 +442,6 @@ function Invoke-PSnmap {
     }
 }
 
-<#
-.SYNOPSIS
-Provides detailed network information. Accepts CIDR notation and IP / subnet mask.
-Inspired by the utility "ipcalc" on Linux.
- 
-Svendsen Tech.
-Copyright (c) 2015, Joakim Svendsen
-All rights reserved.
- 
-MIT license. http://www.opensource.org/licenses/MIT
- 
-.PARAMETER NetworkAddress
-CIDR notation network address, or using subnet mask. Examples: '192.168.0.1/24', '10.20.30.40/255.255.0.0'.
-.PARAMETER Contains
-Causes PSipcalc to return a boolean value for whether the specified IP is in the specified network. Includes network address and broadcast address.
-.PARAMETER Enumerate
-Enumerates all IPs in subnet (potentially resource-expensive). Ignored if you use -Contains.
-#>
 function Invoke-PSipcalc {
     [CmdletBinding()]
     param(
