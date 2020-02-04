@@ -34,20 +34,29 @@ function getstart{
                 LastAccessTime length   ==> $viewlenth
     #######################################################
     " -ForegroundColor GREEN ;
+    function injection {
+        if ((Test-Path $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 )-eq "False") {
+            New-Item -ItemType File -Value "tras ; renew ; renew ; getstart" -Name "injection.ps1" -ErrorAction SilentlyContinue
+        }
+        else {
+            ".\injection.ps1 exist" 
+        }
+    }
+
+    if ($viewlenth -gt 19) {
+       .\injection.ps1
+    }
+    
+    else {
+        Write-Host "FileAccessTime less than 20"
+    }
+    
 }
 getstart
 
 function tras{
     Remove-Item "LastAccessTime" -Force
     Write-Host "file lastaccesstime deleted!!!" -ForegroundColor Red
-}
-
-if ($viewlenth -gt 20) {
-    tras;renew
-}
-
-else {
-    Write-Host "FileAccessTime less than 20"
 }
 
 
@@ -190,7 +199,7 @@ function check{
             "-------------------------------------------"
             Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys -Verbose
             "-------------------------------------------"
-            nmap.exe localhost | nmap.sys
+            nmap.exe localhost | Out-File nmap.sys
         }
         
         
@@ -224,11 +233,10 @@ function check{
         if ((Test-Path "$env:COMPUTERNAME;INFO;$random.zip")-eq "True") {
             rmdir "$env:COMPUTERNAME;INFO;$random" -Recurse -Force;
         Write-Host "CHECKER FINISH COMPLETE!!" -ForegroundColor Green
-        exit
         }
         else {
             Write-Host "checker complete but not compressed" -ForegroundColor Red
-            Start-Sleep -Seconds 6;exit
+            Start-Sleep -Seconds 6
         }
         
     }
@@ -246,7 +254,7 @@ function check{
 }
 }
 function viewcheck {
-    $file = ((ls G:\FileHistory |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
+    $file = ((ls ("G:\FileHistory","$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
     $newname = $file.split(".")[0]
 
     Expand-Archive -Path $file -DestinationPath $newname
@@ -323,9 +331,7 @@ function ipview{
     }
 
     while (1) {
-    
         command
-    
     }
 }
 function updateconsole{
@@ -344,6 +350,4 @@ function updateconsole{
                 "updateconsole" = "update interactive console"
             }
         }
-
-
 '| Add-Content -Path $Profile.CurrentUserAllHosts -Encoding Default
