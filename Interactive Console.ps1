@@ -328,7 +328,6 @@ function ipview{
 function updateconsole{
     iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/Interactive%20Console.ps1") -Verbose
 }
-getupdateconsole -version
 
         function commands{
             [PSCustomObject]@{
