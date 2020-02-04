@@ -6,20 +6,22 @@ else {
     New-Item -Path $Profile.CurrentUserAllHosts -ItemType File -Force
 }
 '
+
 Clear-Host;Set-Location $env:USERPROFILE
 function date{
     (Get-Date).ToString("dd.MM.yyyy/HH:mm:ss"); 
 }
-
 function renew {
     date >>"LastAccessTime"
     Write-Host "file lastaccesstime renew!!!" -ForegroundColor Red
 }
-
 function view{
     Get-Content "LastAccessTime" -ErrorAction SilentlyContinue
 }
-
+function tras{
+    Remove-Item "LastAccessTime" -Force
+    Write-Host "file lastaccesstime deleted!!!" -ForegroundColor Red
+}
 function getstart{
     $date = date
     $view = view
@@ -35,16 +37,17 @@ function getstart{
     #######################################################
     " -ForegroundColor GREEN ;
     function injection {
-        if ((Test-Path $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 )-eq "False") {
+        if (!(Test-Path $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 ) -eq "True") {
+            cd $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\ ;
             New-Item -ItemType File -Value "tras ; renew ; renew ; getstart" -Name "injection.ps1" -ErrorAction SilentlyContinue
         }
         else {
-            ".\injection.ps1 exist" 
+            Write-Host ".\injection.ps1 exist"
         }
     }
-
-    if ($viewlenth -gt 19) {
-       .\injection.ps1
+    injection
+    if ($viewlenth -gt 20) {
+        tras ; renew ; renew 
     }
     
     else {
@@ -53,12 +56,6 @@ function getstart{
     
 }
 getstart
-
-function tras{
-    Remove-Item "LastAccessTime" -Force
-    Write-Host "file lastaccesstime deleted!!!" -ForegroundColor Red
-}
-
 
 function findex{
     function ipfind{
@@ -124,7 +121,6 @@ function findex{
             ipfind
         }
      }
-
      else {
   
          [ordered]@{
@@ -240,7 +236,6 @@ function check{
         }
         
     }
-
     Read-Host "start checker.ps1?(y/n)"|ForEach-Object{
         if ($_ -eq "y") {
             checkerPS1
@@ -256,9 +251,7 @@ function check{
 function viewcheck {
     $file = ((ls ("G:\FileHistory","$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
     $newname = $file.split(".")[0]
-
     Expand-Archive -Path $file -DestinationPath $newname
-
     if ((Test-Path -Path $newname)-eq "True") {
         rm $file
         Set-Location $newname
@@ -271,7 +264,6 @@ function viewcheck {
     }
   
 }
-
 function ipview{
     function myip1{
         $wc = new-object System.Net.Webclient
@@ -329,7 +321,6 @@ function ipview{
        }
     }
     }
-
     while (1) {
         command
     }
@@ -337,7 +328,6 @@ function ipview{
 function updateconsole{
     iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/Interactive%20Console.ps1") -Verbose
 }
-
         function commands{
             [PSCustomObject]@{
                 "tras" = "remove last access time file"
