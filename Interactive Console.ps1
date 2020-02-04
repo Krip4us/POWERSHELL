@@ -6,30 +6,51 @@ else {
     New-Item -Path $Profile.CurrentUserAllHosts -ItemType File -Force
 }
 '
-
 Clear-Host;Set-Location $env:USERPROFILE
 function date{
     (Get-Date).ToString("dd.MM.yyyy/HH:mm:ss"); 
 }
-$date = date
-Write-Host "
-#######################################################
-            inicio de sesion ==>  $date      
-            HELP COMMANDS    ==>  commands
-#######################################################
-" -ForegroundColor GREEN ;
-date >>"LastAccessTime"
-function tras{
-    Remove-Item "LastAccessTime" -Force
-    Write-Host "file lastaccesstime deleted!!!" -ForegroundColor Red
-}
+
 function renew {
     date >>"LastAccessTime"
     Write-Host "file lastaccesstime renew!!!" -ForegroundColor Red
 }
+
 function view{
-    Get-Content "LastAccessTime"
+    Get-Content "LastAccessTime" -ErrorAction SilentlyContinue
 }
+
+function getstart{
+    $date = date
+    $view = view
+    $viewlenth = (view).length
+    ($view)[0..$viewlenth]
+    date >>"LastAccessTime"
+    
+    Write-Host "
+    #######################################################
+                inicio de sesion        ==>  $date      
+                HELP COMMANDS           ==>  commands
+                LastAccessTime length   ==> $viewlenth
+    #######################################################
+    " -ForegroundColor GREEN ;
+}
+getstart
+
+function tras{
+    Remove-Item "LastAccessTime" -Force
+    Write-Host "file lastaccesstime deleted!!!" -ForegroundColor Red
+}
+
+if ($viewlenth -gt 20) {
+    tras;renew
+}
+
+else {
+    Write-Host "FileAccessTime less than 20"
+}
+
+
 function findex{
     function ipfind{
         Read-Host "ip to find:help(ip examples...)>" |ForEach-Object{
@@ -135,22 +156,38 @@ function check{
         }
         LastLog
         function Check{
-            Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys
-            systeminfo.exe | Out-File systeminfo.sys
-            Get-PSDrive | Out-File PSDrive.sys
-            Get-Service | Format-Custom | Out-File Service.sys
-            Get-Process | Out-File Process.sys
-            Get-PnpDevice | sort-object -property status -descending | Out-File PnpDevice.sys
-            Get-Disk | Out-File Disk.sys
-            Get-NetTCPConnection | Select * | Format-List | Out-File NetTCPConnection.sys
+            Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys -Verbose
+            "-------------------------------------------"
+            systeminfo.exe | Out-File systeminfo.sys -Verbose
+            "-------------------------------------------"
+            Get-PSDrive | Out-File PSDrive.sys -Verbose
+            "-------------------------------------------"
+            Get-Service | Format-Custom | Out-File Service.sys -Verbose
+            "-------------------------------------------"
+            Get-Process | Out-File Process.sys -Verbose
+            "-------------------------------------------"
+            Get-PnpDevice | sort-object -property status -descending | Out-File PnpDevice.sys -Verbose
+            "-------------------------------------------"
+            Get-Disk | Out-File Disk.sys -Verbose
+            "-------------------------------------------"
+            Get-NetTCPConnection | Select * | Format-List | Out-File NetTCPConnection.sys -Verbose
+            "-------------------------------------------"
             $wc = new-object System.Net.Webclient
-            $wc.DownloadString("http://icanhazip.com/") | Out-File IPv6.sys
-            nslookup myip.opendns.com resolver1.opendns.com | Out-File NsLookup.sys
-            ipconfig.exe /displaydns
-            Get-NetAdapterBinding -Name "USB-ETH1","Ethernet 2" |Sort-Object -Property Enabled -CaseSensitive | Out-File "Get-NetAdapterBinding.sys"
-            Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\" | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File "USBSTOR.sys"
-            Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys
+            $wc.DownloadString("http://icanhazip.com/") | Out-File IPv6.sys -Verbose
+            "-------------------------------------------"
+            nslookup myip.opendns.com resolver1.opendns.com | Out-File NsLookup.sys -Verbose
+            "-------------------------------------------"
+            ipconfig.exe /displaydns | Out-File displaydns.sys -Verbose
+            "-------------------------------------------"
+            Get-NetAdapterBinding -Name "USB-ETH1','Ethernet 2" |Sort-Object -Property Enabled -CaseSensitive | Out-File Get-NetAdapterBinding.sys -Verbose
+            "-------------------------------------------"
+            Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\" | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
+            "-------------------------------------------"
+            Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys -Verbose
+            "-------------------------------------------"
+            nmap.exe localhost | nmap.sys
         }
+        
         
         function action{
             "-------------------------------------------"
@@ -181,9 +218,7 @@ function check{
         Compress-Archive -Path  "$env:COMPUTERNAME;INFO;$random" -DestinationPath  "$env:COMPUTERNAME;INFO;$random.zip";
         if ((Test-Path "$env:COMPUTERNAME;INFO;$random.zip")-eq "True") {
             rmdir "$env:COMPUTERNAME;INFO;$random" -Recurse -Force;
-
         Write-Host "CHECKER FINISH COMPLETE!!" -ForegroundColor Green
-
         exit
         }
         else {
@@ -192,6 +227,7 @@ function check{
         }
         
     }
+
     Read-Host "start checker.ps1?(y/n)"|ForEach-Object{
         if ($_ -eq "y") {
             checkerPS1
@@ -200,10 +236,29 @@ function check{
             Write-Host "not start" -ForegroundColor Yellow
         }
         else {
-            Write-Host "connot start" -ForegroundColor Red
-        }
+            Write-Warning "connot start" 
     }
 }
+}
+function viewcheck {
+    $file = ((ls G:\FileHistory |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
+    $newname = $file.split(".")[0]
+
+    Expand-Archive -Path $file -DestinationPath $newname
+
+    if ((Test-Path -Path $newname)-eq "True") {
+        rm $file
+        Set-Location $newname
+         cd ($newname.Split("\")[2])
+        ls
+        Write-Host (gc .\CHECKER.log)[0] -ForegroundColor Green
+    }
+    else {
+        Write-Warning "Cannot view check on:: $file"
+    }
+  
+}
+
 function ipview{
     function myip1{
         $wc = new-object System.Net.Webclient
@@ -268,14 +323,16 @@ function ipview{
     
     }
 }
-function commands{
-    [PSCustomObject]@{
-        "tras"= "remove last access time file"
-        "renew"= "renew last access time file"
-        "view"= "get content of last access time file"
-        "findex"= "find a domain name or ip"
-        "check"= "check you system"
-        "ipview" = "see ip public"
-    }
-}
+
+        function commands{
+            [PSCustomObject]@{
+                "tras" = "remove last access time file"
+                "renew" = "renew last access time file"
+                "view" = "get content of last access time file"
+                "findex"= "find a domain name or ip"
+                "check" = "check you system"
+                "ipview" = "see ip public"
+                "viewcheck" = "view the last checker file compress"
+            }
+        }
 '| Add-Content -Path $Profile.CurrentUserAllHosts -Encoding Default
