@@ -24,21 +24,40 @@ Get_Date | out-file CHECKER.log
 
 ##############################################################################
 function Check{
-    Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys
-    systeminfo.exe | Out-File systeminfo.sys
-    Get-PSDrive | Out-File PSDrive.sys
-    Get-Service | Format-Custom | Out-File Service.sys
-    Get-Process | Out-File Process.sys
-    Get-PnpDevice | sort-object -property status -descending | Out-File PnpDevice.sys
-    Get-Disk | Out-File Disk.sys
-    Get-NetTCPConnection | Select * | Format-List | Out-File NetTCPConnection.sys
+    Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys -Verbose
+    "-------------------------------------------"
+    systeminfo.exe | Out-File systeminfo.sys -Verbose
+    "-------------------------------------------"
+    Get-PSDrive | Out-File PSDrive.sys -Verbose
+    "-------------------------------------------"
+    Get-Service | Format-Custom | Out-File Service.sys -Verbose
+    "-------------------------------------------"
+    Get-Process | Out-File Process.sys -Verbose
+    "-------------------------------------------"
+    Get-PnpDevice | sort-object -property status -descending | Out-File PnpDevice.sys -Verbose
+    "-------------------------------------------"
+    Get-Disk | Out-File Disk.sys -Verbose
+    "-------------------------------------------"
+    Get-NetTCPConnection | Select * | Format-List | Out-File NetTCPConnection.sys -Verbose
+    "-------------------------------------------"
     $wc = new-object System.Net.Webclient
-    $wc.DownloadString("http://icanhazip.com/") | Out-File IPv6.sys
-    nslookup myip.opendns.com resolver1.opendns.com | Out-File NsLookup.sys
-    ipconfig.exe /displaydns | Out-File displaydns.sys
-    Get-NetAdapterBinding -Name 'USB-ETH1','Ethernet 2' |Sort-Object -Property Enabled -CaseSensitive | Out-File 'Get-NetAdapterBinding.sys'
-    Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\' | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File 'USBSTOR.sys'
-    Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys
+    $wc.DownloadString("http://icanhazip.com/") | Out-File IPv6.sys -Verbose
+    "-------------------------------------------"
+    nslookup myip.opendns.com resolver1.opendns.com | Out-File NsLookup.sys -Verbose
+    "-------------------------------------------"
+    ipconfig.exe /displaydns | Out-File displaydns.sys -Verbose
+    "-------------------------------------------"
+    Get-NetAdapterBinding -Name 'USB-ETH1','Ethernet 2' |Sort-Object -Property Enabled -CaseSensitive | Out-File Get-NetAdapterBinding.sys -Verbose
+    "-------------------------------------------"
+    Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\' | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
+    "-------------------------------------------"
+    Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys -Verbose
+    "-------------------------------------------"
+    nmap.exe localhost | nmap.sys
+    "-------------------------------------------"
+    whoami /all | out-file whoami.sys
+    "-------------------------------------------"
+    wbadmin get versions | out-file DiskVersions.sys
 }
 
 function action{
@@ -55,11 +74,12 @@ function action{
         "-------------------------------------------"
     Get-WmiObject Win32_PhysicalMemory | Select-Object ConfiguredClockSpeed| Out-File ConfiguredClockSpeed.sys
         "-------------------------------------------"
-    Get-WmiObject Win32_PhysicalMemory | Select-Object Speed| Out-File Speed.sys
+    Get-WmiObject Win32_PhysicalMemory | Select-Object MinVoltage| Out-File MinVoltage.sys
         "-------------------------------------------" 
-    Get-WmiObject -Query "select * from win32_service where name='WinRM'" -ComputerName $env:COMPUTERNAME | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
+    Get-WmiObject -class win32_service -ComputerName ASUS-DC001 | where-object name -match "WinRM" | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
         "-------------------------------------------"
-
+    Get-WmiObject -Class Win32_VoltageProbe | Select-Object Status,Description,MaxReadable,MinReadable | Format-Table | out-file VoltageProbe.sys
+        "-------------------------------------------"
     }
     
 #################
@@ -73,7 +93,6 @@ if ((Test-Path "$env:COMPUTERNAME;INFO;$random.zip")-eq 'True') {
 '________________________________________________________________________________________________'
 Write-Host "CHECKER FINISH COMPLETE!!" -ForegroundColor Green
 '________________________________________________________________________________________________'
-exit
 }
 else {
     Write-Host 'checker complete but not compressed' -ForegroundColor Red
