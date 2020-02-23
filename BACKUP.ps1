@@ -198,6 +198,6 @@ if ($CheckDir -eq $false) {
 }
 
 Write-Host "Press any key to close ..."
-<# FIN DEL SCRIPT DE VERBOS
+<# FIN DEL SCRIPT DE BACKUPE
 .AUTHOR = krip4Us@github.com
 #>
