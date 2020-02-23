@@ -341,3 +341,6 @@ function updateconsole{
             }
         }
 '| Add-Content -Path $Profile.CurrentUserAllHosts -Encoding Default
+<# FIN DEL SCRIPT DE INTERACTIVE CONSOLE
+.AUTHOR = krip4Us@github.com
+#>
