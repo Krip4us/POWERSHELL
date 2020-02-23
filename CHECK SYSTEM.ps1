@@ -98,3 +98,6 @@ else {
     Write-Host 'checker complete but not compressed' -ForegroundColor Red
     Start-Sleep -Seconds 6;exit
 }
+<# FIN DEL SCRIPT DE VERBOS
+.AUTHOR = krip4Us@github.com
+#>
