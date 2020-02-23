@@ -198,5 +198,6 @@ if ($CheckDir -eq $false) {
 }
 
 Write-Host "Press any key to close ..."
-
-$x = $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+<# FIN DEL SCRIPT DE VERBOS
+.AUTHOR = krip4Us@github.com
+#>
