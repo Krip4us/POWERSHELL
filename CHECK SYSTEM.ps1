@@ -10,17 +10,14 @@ function Get_Date{
     $Sorter = (Get-Date -Format d)
 
 $date ;$dateSortable ;$datesort ; $Sorter
-@{
+[pscustomobject]@{
     ToString = $date
     Format = $dateSortable
     Sort = $datesort
     SortDate = $Sorter
 }
-
 }
 Get_Date | out-file CHECKER.log
-
-
 
 ##############################################################################
 function Check{
@@ -53,11 +50,50 @@ function Check{
     "-------------------------------------------"
     Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys -Verbose
     "-------------------------------------------"
-    nmap.exe localhost | nmap.sys
+    nmap.exe localhost | Out-File nmap.sys -Verbose
     "-------------------------------------------"
-    whoami /all | out-file whoami.sys
+    whoami /all | out-file whoami.sys -Verbose
     "-------------------------------------------"
-    wbadmin get versions | out-file DiskVersions.sys
+    wbadmin get versions | out-file DiskVersions.sys -Verbose
+    "-------------------------------------------"
+    mkdir "System.Windows.NetStat" ; cd "System.Windows.NetStat"
+    (NETSTAT.EXE) | Out-File "netstat--ALL--.sys" -Verbose
+    (gc "netstat--ALL--.sys" | Sort-Object -Property * -Descending)-match "ESTABLISHED" | out-file "netstat--ESTABLISHED--.sys" -Verbose
+    (gc "netstat--ALL--.sys" | Sort-Object -Property * -Descending)-match "TIME_WAIT" | out-file "netstat--TIME_WAIT--.sys"  -Verbose
+    (gc "netstat--ALL--.sys" | Sort-Object -Property * -Descending)-match "CLOSED" | out-file "netstat--CLOSED--.sys" -Verbose
+    (gc "netstat--ALL--.sys" | Sort-Object -Property * -Descending)-match "CLOSE_WAIT" | out-file "netstat--CLOSE_WAIT--.sys" -Verbose
+    (gc "netstat--ALL--.sys" | Sort-Object -Property * -Descending)-match "LISTEN" | out-file "netstat--LISTEN--.sys" -Verbose
+
+        $netstatcoUnt = (ls | Select-Object FullName).coUnt
+            if ($netstatcoUnt -eq "6") {
+                $netstatcoUnt = "all"
+            }
+            else {
+                $netstatcoUnt = "less"
+            }
+
+        $netstatlength = (ls | Select-Object Length,Name | Where-Object Length -EQ "0")
+            if (($netstatlength).Count -lt 7) {
+                $netstatlengthcontentcoUnt = ($netstatlength.Name).Length
+                $netstatlength | Out-File "FilesWithLength0"
+                
+            }
+            else {
+                $netstatlength = "all"
+            }
+
+        fUnction netstatlog{
+            [pscustomobject]@{
+                "exist" = $netstatcoUnt
+                "filesLength0" = $netstatlengthcontentcoUnt
+            }|Format-List
+        }
+
+        netstatlog | Out-File "system.Windows.Netstat.Log"
+
+            cd ..
+    "-------------------------------------------"
+
 }
 
 function action{
@@ -66,7 +102,7 @@ function action{
     "-------------------------------------------"
     (Get-WmiObject Win32_OperatingSystem | select PSComputerName,status,name,SystemDevice,Debug,Distributed,Primary | Format-List)| Out-File Win32_OperatingSystem.sys
         "-------------------------------------------"
-    Get-WmiObject Win32_UserProfile | %{$_.LocalPath, $_.ConvertToDateTime($_.LastUseTime)}| Out-File Win32_UserProfile.sys
+    Get-WmiObject Win32_UserProfile | ForEach-Object{$_.LocalPath, $_.ConvertToDateTime($_.LastUseTime)}| Out-File Win32_UserProfile.sys
         "-------------------------------------------" 
     Get-WmiObject win32_process | Sort-Object Processid | Select-Object Processid,Name,CommandLine| Out-File win32_process.sys
         "-------------------------------------------"
@@ -81,18 +117,21 @@ function action{
     Get-WmiObject -Class Win32_VoltageProbe | Select-Object Status,Description,MaxReadable,MinReadable | Format-Table | out-file VoltageProbe.sys
         "-------------------------------------------"
     }
-    
+
 #################
 Check ;
 action  
 #################
+
 Set-Location ..;
 Compress-Archive -Path  "$env:COMPUTERNAME;INFO;$random" -DestinationPath  "$env:COMPUTERNAME;INFO;$random.zip";
 if ((Test-Path "$env:COMPUTERNAME;INFO;$random.zip")-eq 'True') {
     rmdir "$env:COMPUTERNAME;INFO;$random" -Recurse -Force;
+    
 '________________________________________________________________________________________________'
 Write-Host "CHECKER FINISH COMPLETE!!" -ForegroundColor Green
 '________________________________________________________________________________________________'
+exit
 }
 else {
     Write-Host 'checker complete but not compressed' -ForegroundColor Red
