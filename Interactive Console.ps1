@@ -6,7 +6,6 @@ else {
     New-Item -Path $Profile.CurrentUserAllHosts -ItemType File -Force
 }
 '
-
 Clear-Host;Set-Location $env:USERPROFILE
 function date{
     (Get-Date).ToString("dd.MM.yyyy/HH:mm:ss"); 
@@ -46,7 +45,7 @@ function getstart{
         }
     }
     injection
-    if ($viewlenth -gt 20) {
+    if ($viewlenth -gt 19) {
         tras ; renew ; renew 
     }
     
@@ -56,7 +55,6 @@ function getstart{
     
 }
 getstart
-
 function findex{
     function ipfind{
         Read-Host "ip to find:help(ip examples...)>" |ForEach-Object{
@@ -166,7 +164,7 @@ function check{
         }
         LastLog
         function Check{
-            Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys -Verbose
+            
             "-------------------------------------------"
             systeminfo.exe | Out-File systeminfo.sys -Verbose
             "-------------------------------------------"
@@ -193,29 +191,62 @@ function check{
             "-------------------------------------------"
             Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\" | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
             "-------------------------------------------"
-            Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys -Verbose
+            
             "-------------------------------------------"
             nmap.exe localhost | Out-File nmap.sys
+            "-------------------------------------------"
+            whoami /all | out-file whoami.sys
+            "-------------------------------------------"
+            wbadmin get versions | out-file DiskVersions.sys
         }
         
+        function ErrorPsVersionTable {
+            ($PSVersionTable.PSVersion).Major | ForEach-Object{
+                if ($_ -gt "5") {
+
+                    Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys -Verbose
+                    Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys -Verbose
+                    (Get-WmiObject Win32_OperatingSystem | select PSComputerName,status,name,SystemDevice,Debug,Distributed,Primary | Format-List)| Out-File Win32_OperatingSystem.sys
+                    Get-WmiObject Win32_UserProfile | %{$_.LocalPath, $_.ConvertToDateTime($_.LastUseTime)}| Out-File Win32_UserProfile.sys
+                    Get-WmiObject win32_process | Sort-Object Processid | Select-Object Processid,Name,CommandLine| Out-File win32_process.sys
+                    Get-WmiObject -Class Win32_Service | Select-Object Name,@{Name="ProcessID";Expression={$_.ProcessID;(Get-Process -Id $_.ProcessID).name}}| Out-File Win32_Service.sys
+                    Get-WmiObject Win32_PhysicalMemory | Select-Object ConfiguredClockSpeed| Out-File ConfiguredClockSpeed.sys
+                    Get-WmiObject Win32_PhysicalMemory | Select-Object MinVoltage| Out-File MinVoltage.sys
+                    Get-WmiObject -class win32_service -ComputerName . | where-object name -match "WinRM" | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
+                }
+                else {
+                    
+                    Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys -Verbose
+                    Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys -Verbose
+                    (Get-WmiObject Win32_OperatingSystem | select PSComputerName,status,name,SystemDevice,Debug,Distributed,Primary | Format-List)| Out-File Win32_OperatingSystem.sys
+                    Get-WmiObject Win32_UserProfile | %{$_.LocalPath, $_.ConvertToDateTime($_.LastUseTime)}| Out-File Win32_UserProfile.sys
+                    Get-WmiObject win32_process | Sort-Object Processid | Select-Object Processid,Name,CommandLine| Out-File win32_process.sys
+                    Get-WmiObject -Class Win32_Service | Select-Object Name,@{Name="ProcessID";Expression={$_.ProcessID;(Get-Process -Id $_.ProcessID).name}}| Out-File Win32_Service.sys
+                    Get-WmiObject Win32_PhysicalMemory | Select-Object ConfiguredClockSpeed| Out-File ConfiguredClockSpeed.sys
+                    Get-WmiObject Win32_PhysicalMemory | Select-Object MinVoltage| Out-File MinVoltage.sys
+                    Get-WmiObject -class win32_service -ComputerName . | where-object name -match "WinRM" | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
+
+                }
+            }
+        }
         
         function action{
             "-------------------------------------------"
             ([System.Security.Principal.WindowsIdentity]::GetCurrent()).name | Out-File CurrentUser.sys
             "-------------------------------------------"
-            (Get-WmiObject Win32_OperatingSystem | select PSComputerName,status,name,SystemDevice,Debug,Distributed,Primary | Format-List)| Out-File Win32_OperatingSystem.sys
-                "-------------------------------------------"
-            Get-WmiObject Win32_UserProfile | %{$_.LocalPath, $_.ConvertToDateTime($_.LastUseTime)}| Out-File Win32_UserProfile.sys
+            
+            "-------------------------------------------"
+            
                 "-------------------------------------------" 
-            Get-WmiObject win32_process | Sort-Object Processid | Select-Object Processid,Name,CommandLine| Out-File win32_process.sys
+            
                 "-------------------------------------------"
-            Get-WmiObject -Class Win32_Service | Select-Object Name,@{Name="ProcessID";Expression={$_.ProcessID;(Get-Process -Id $_.ProcessID).name}}| Out-File Win32_Service.sys
+            
                 "-------------------------------------------"
-            Get-WmiObject Win32_PhysicalMemory | Select-Object ConfiguredClockSpeed| Out-File ConfiguredClockSpeed.sys
+            
                 "-------------------------------------------"
-            Get-WmiObject Win32_PhysicalMemory | Select-Object MinVoltage| Out-File MinVoltage.sys
+            
                 "-------------------------------------------" 
-            Get-WmiObject -class win32_service -ComputerName ASUS-DC001 | where-object name -match "WinRM" | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
+            
                 "-------------------------------------------"
         
             }
@@ -328,18 +359,26 @@ function ipview{
 function updateconsole{
     iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/Interactive%20Console.ps1") -Verbose
 }
-        function commands{
-            [PSCustomObject]@{
-                "tras" = "remove last access time file"
-                "renew" = "renew last access time file"
-                "view" = "get content of last access time file"
-                "findex"= "find a domain name or ip"
-                "check" = "check you system"
-                "ipview" = "see ip public"
-                "viewcheck" = "view the last checker file compress"
-                "updateconsole" = "update interactive console"
-            }
-        }
+function removecheckers {
+$rootPath = $env:USERPROFILE
+    (ls $rootPath | Where-Object name -Match "$env:COMPUTERNAME;INFO;" | Select-Object FullName) | ForEach-Object{
+        Remove-Item $_.FullName -Recurse -Force -Verbose -Confirm:$true
+    }
+}
+function commands{
+    [PSCustomObject]@{
+        "getstart" = "display the first message that you see"
+        "tras" = "remove last access time file"
+        "renew" = "renew last access time file"
+        "view" = "get content of last access time file"
+        "findex"= "find a domain name or ip"
+        "check" = "check you system"
+        "viewcheck" = "view the last checker file compressed"
+        "removecheckers" = "remove all last checker files"
+        "ipview" = "see ip public"
+        "updateconsole" = "update interactive console"
+    }
+}
 '| Add-Content -Path $Profile.CurrentUserAllHosts -Encoding Default
 <# FIN DEL SCRIPT DE INTERACTIVE CONSOLE
 .AUTHOR = krip4Us@github.com
