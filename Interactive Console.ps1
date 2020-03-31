@@ -6,6 +6,7 @@ else {
     New-Item -Path $Profile.CurrentUserAllHosts -ItemType File -Force
 }
 '
+
 Clear-Host;Set-Location $env:USERPROFILE
 function date{
     (Get-Date).ToString("dd.MM.yyyy/HH:mm:ss"); 
@@ -191,70 +192,21 @@ function check{
             "-------------------------------------------"
             Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\" | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
             "-------------------------------------------"
-            
-            "-------------------------------------------"
-            nmap.exe localhost | Out-File nmap.sys
-            "-------------------------------------------"
             whoami /all | out-file whoami.sys
             "-------------------------------------------"
             wbadmin get versions | out-file DiskVersions.sys
         }
-        
-        function ErrorPsVersionTable {
-            ($PSVersionTable.PSVersion).Major | ForEach-Object{
-                if ($_ -gt "5") {
-
-                    Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys -Verbose
-                    Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys -Verbose
-                    (Get-WmiObject Win32_OperatingSystem | select PSComputerName,status,name,SystemDevice,Debug,Distributed,Primary | Format-List)| Out-File Win32_OperatingSystem.sys
-                    Get-WmiObject Win32_UserProfile | %{$_.LocalPath, $_.ConvertToDateTime($_.LastUseTime)}| Out-File Win32_UserProfile.sys
-                    Get-WmiObject win32_process | Sort-Object Processid | Select-Object Processid,Name,CommandLine| Out-File win32_process.sys
-                    Get-WmiObject -Class Win32_Service | Select-Object Name,@{Name="ProcessID";Expression={$_.ProcessID;(Get-Process -Id $_.ProcessID).name}}| Out-File Win32_Service.sys
-                    Get-WmiObject Win32_PhysicalMemory | Select-Object ConfiguredClockSpeed| Out-File ConfiguredClockSpeed.sys
-                    Get-WmiObject Win32_PhysicalMemory | Select-Object MinVoltage| Out-File MinVoltage.sys
-                    Get-WmiObject -class win32_service -ComputerName . | where-object name -match "WinRM" | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
-                }
-                else {
-                    
-                    Get-WmiObject -Class win32_Desktop | Out-File win32_Desktop.sys -Verbose
-                    Get-WmiObject -Class Win32_NetworkAdapter | Where-Object { $_.Speed -ne $null -and $_.MACAddress -ne $null } | Format-List | Out-File Win32_NetworkAdapter.sys -Verbose
-                    (Get-WmiObject Win32_OperatingSystem | select PSComputerName,status,name,SystemDevice,Debug,Distributed,Primary | Format-List)| Out-File Win32_OperatingSystem.sys
-                    Get-WmiObject Win32_UserProfile | %{$_.LocalPath, $_.ConvertToDateTime($_.LastUseTime)}| Out-File Win32_UserProfile.sys
-                    Get-WmiObject win32_process | Sort-Object Processid | Select-Object Processid,Name,CommandLine| Out-File win32_process.sys
-                    Get-WmiObject -Class Win32_Service | Select-Object Name,@{Name="ProcessID";Expression={$_.ProcessID;(Get-Process -Id $_.ProcessID).name}}| Out-File Win32_Service.sys
-                    Get-WmiObject Win32_PhysicalMemory | Select-Object ConfiguredClockSpeed| Out-File ConfiguredClockSpeed.sys
-                    Get-WmiObject Win32_PhysicalMemory | Select-Object MinVoltage| Out-File MinVoltage.sys
-                    Get-WmiObject -class win32_service -ComputerName . | where-object name -match "WinRM" | Format-List -Property PSComputerName, Name, ExitCode, Name, ProcessID, StartMode, State, Status| Out-File WinRM.sys
-
-                }
-            }
-        }
-        
         function action{
             "-------------------------------------------"
             ([System.Security.Principal.WindowsIdentity]::GetCurrent()).name | Out-File CurrentUser.sys
             "-------------------------------------------"
-            
-            "-------------------------------------------"
-            
-                "-------------------------------------------" 
-            
-                "-------------------------------------------"
-            
-                "-------------------------------------------"
-            
-                "-------------------------------------------"
-            
-                "-------------------------------------------" 
-            
-                "-------------------------------------------"
-        
             }
-            
+
         #################
         Check ;
         action  
         #################
+        
         Set-Location ..;
         Compress-Archive -Path  "$env:COMPUTERNAME;INFO;$random" -DestinationPath  "$env:COMPUTERNAME;INFO;$random.zip";
         if ((Test-Path "$env:COMPUTERNAME;INFO;$random.zip")-eq "True") {
