@@ -44,7 +44,7 @@ function Check{
     "-------------------------------------------"
     ipconfig.exe /displaydns | Out-File displaydns.sys -Verbose
     "-------------------------------------------"
-    Get-NetAdapterBinding -Name 'USB-ETH1','Ethernet 2' |Sort-Object -Property Enabled -CaseSensitive | Out-File Get-NetAdapterBinding.sys -Verbose
+    Get-NetAdapterBinding -Name * |Sort-Object -Property Enabled -CaseSensitive | Out-File Get-NetAdapterBinding.sys -Verbose
     "-------------------------------------------"
     Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\' | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
     "-------------------------------------------"
