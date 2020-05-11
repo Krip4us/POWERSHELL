@@ -6,13 +6,12 @@ else {
     New-Item -Path $Profile.CurrentUserAllHosts -ItemType File -Force
 }
 '
-
 Clear-Host;Set-Location $env:USERPROFILE
 function date{
     (Get-Date).ToString("dd.MM.yyyy/HH:mm:ss"); 
 }
 function renew {
-    date >>"LastAccessTime"
+    date >> "LastAccessTime" 
     Write-Host "file lastaccesstime renew!!!" -ForegroundColor Red
 }
 function view{
@@ -23,19 +22,33 @@ function tras{
     Write-Host "file lastaccesstime deleted!!!" -ForegroundColor Red
 }
 function getstart{
-    $date = date
-    $view = view
-    $viewlenth = (view).length
-    ($view)[0..$viewlenth]
-    date >>"LastAccessTime"
-    
-    Write-Host "
-    #######################################################
-                inicio de sesion        ==>  $date      
-                HELP COMMANDS           ==>  commands
-                LastAccessTime length   ==> $viewlenth
-    #######################################################
-    " -ForegroundColor GREEN ;
+    function starter{
+        
+        $date = date
+        $view = view
+        $viewlenth = (view).count
+        gc $env:USERPROFILE\LastAccessTime
+        renew
+        Write-Host "
+        #######################################################
+                    inicio de sesion        ==>  $date      
+                    HELP COMMANDS           ==>  commands
+                    LastAccessTime length   ==> $viewlenth
+        #######################################################
+        " -ForegroundColor GREEN ;
+    }
+
+    if( ((gc .\LastAccessTime -ErrorAction SilentlyContinue).length -gt 1) -eq "True" ){
+        starter
+    }
+    elseif ( (Test-Path $env:USERPROFILE\LastAccessTime) -eq "False" ) {
+        Add-Content $date -path "LastAccessTime" ; starter 
+    }
+    else {
+        renew ; starter
+    }
+
+
     function injection {
         if (!(Test-Path $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 ) -eq "True") {
             cd $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\ ;
@@ -45,14 +58,7 @@ function getstart{
             Write-Host ".\injection.ps1 exist"
         }
     }
-    injection
-    if ($viewlenth -gt 19) {
-        tras ; renew ; renew 
-    }
-    
-    else {
-        Write-Host "FileAccessTime less than 20"
-    }
+    #injection
     
 }
 getstart
@@ -96,12 +102,6 @@ function findex{
       Read-Host "domain name=>www.example.com:>"|ForEach-Object{
         $ping = ping $_ -n 1
         $pingip = (($ping).split("[").split("]")[2])
-        <#
-        if ($_ -eq "exit") {
-            [System.Windows.Forms.SendKeys]::SendWait("exit")
-        }
-      
-        #>
     }
       $pingip| Out-GridView
   }
@@ -192,21 +192,23 @@ function check{
             "-------------------------------------------"
             Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\" | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
             "-------------------------------------------"
+            nmap.exe localhost | Out-File nmap.sys
+            "-------------------------------------------"
             whoami /all | out-file whoami.sys
             "-------------------------------------------"
             wbadmin get versions | out-file DiskVersions.sys
         }
+               
         function action{
             "-------------------------------------------"
             ([System.Security.Principal.WindowsIdentity]::GetCurrent()).name | Out-File CurrentUser.sys
-            "-------------------------------------------"
+            "-------------------------------------------"        
             }
-
+            
         #################
         Check ;
         action  
         #################
-        
         Set-Location ..;
         Compress-Archive -Path  "$env:COMPUTERNAME;INFO;$random" -DestinationPath  "$env:COMPUTERNAME;INFO;$random.zip";
         if ((Test-Path "$env:COMPUTERNAME;INFO;$random.zip")-eq "True") {
@@ -318,6 +320,17 @@ $rootPath = $env:USERPROFILE
     }
 }
 function commands{
+
+    Write-Host "__________________________________________________________________"
+    Write-Host "AUTHOR      : krip4us@github.com" -ForegroundColor Green 
+    Write-Host "NAME        : interactive console for starting powershel" -ForegroundColor Red
+    Write-Host "NAME PS1    : profile.ps1" -ForegroundColor Red
+    Write-Host "EXTENSION   : .ps1 (powershell scripts file extension predefined )" -ForegroundColor Blue
+    Write-Host "PATH        : $env:USERPROFILE\Documents\WindowsPowershell" -ForegroundColor Magenta
+    Write-Host "__________________________________________________________________
+COMMANDS:
+---------"
+
     [PSCustomObject]@{
         "getstart" = "display the first message that you see"
         "tras" = "remove last access time file"
