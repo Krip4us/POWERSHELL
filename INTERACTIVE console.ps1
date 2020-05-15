@@ -22,8 +22,7 @@ function tras{
     Write-Host "file lastaccesstime deleted!!!" -ForegroundColor Red
 }
 function getstart{
-    function starter{
-        
+    function starter{        
         $date = date
         $view = view
         $viewlenth = (view).count
@@ -37,7 +36,6 @@ function getstart{
         #######################################################
         " -ForegroundColor GREEN ;
     }
-
     if( ((gc .\LastAccessTime -ErrorAction SilentlyContinue).length -gt 1) -eq "True" ){
         starter
     }
@@ -47,24 +45,34 @@ function getstart{
     else {
         renew ; starter
     }
-
-
-    function injection {
+    }
+function tasker {
+    function test{
         if (!(Test-Path $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 ) -eq "True") {
             cd $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\ ;
             New-Item -ItemType File -Value "tras ; renew ; renew ; getstart" -Name "injection.ps1" -ErrorAction SilentlyContinue
+            $test = "none"
         }
         else {
-            Write-Host ".\injection.ps1 exist"
+            Write-Host ".\injection.ps1 exist" 
+            $test = "ok"
         }
-    }
-    #injection
-    
+        }
+        
+    start-process powershell{ Invoke-Expression $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 }
+        }
+if (((view).count -gt 19)-eq "True") {
+    tasker
+}
+else {
+    $test::"ok" 
+    Write-Host "LastAccessTime file length less than 20"
 }
 getstart
+
 function findex{
     function ipfind{
-        Read-Host "ip to find:help(ip examples...)>" |ForEach-Object{
+        Read-Host "ip to find: help(ip examples...)>" |ForEach-Object{
        if ($_ -eq "help") {
   
            $GOOGLE = (ping "www.google.com" -n 1)
@@ -85,52 +93,51 @@ function findex{
            }
        }
   
-       else {
+    else {
+        $baseURL = "https://whois.arin.net/rest"
+        $ip = $_
+        $url = "$baseUrl/ip/$ip"
+        $r = Invoke-RestMethod  $url 
+        $r.net.name | Out-GridView
   
-      $baseURL = "https://whois.arin.net/rest"
-      $ip = $_
-      $url = "$baseUrl/ip/$ip"
-      $r = Invoke-RestMethod  $url 
-      $r.net.name | Out-GridView
-  
-       }
+    }
    }
    }
-  
-  function domainfind{
+function domainfind{
   
       Read-Host "domain name=>www.example.com:>"|ForEach-Object{
         $ping = ping $_ -n 1
         $pingip = (($ping).split("[").split("]")[2])
-    }
-      $pingip| Out-GridView
-  }
-  
+        }
+
+        $pingip| Out-GridView
+}
   function command{
   
       Read-Host "command to use:>"|ForEach-Object{
   
       if ($_ -eq "find a ip") {
         while (1) {
-            domainfind
+            domainfind            
+            }
         }
-      }
      elseif ($_ -eq "find a domain") {
         while (1) {
             ipfind
         }
      }
-     else {
-  
-         [ordered]@{
-  
-             "find a ip" = "you put a ip and resolve the DOMAIN NAME"
-             "find a domain" = "you put a domain name and resolve the IP ADRESS"
-  
-         } 
+     elseif($_ -eq "exit"){
+        break;
      }
-  }
-  }
+     else {
+        [ordered]@{
+            "find a ip" = "you put a DOMAIN NAME and resolve the IP"
+            "find a domain" = "you put a IP ADRESS and resolve the IP"
+            "exit" = "exit interactive console"
+            } 
+        }
+    }
+}
   
   while (1) {
   
@@ -140,38 +147,39 @@ function findex{
 }
 function check{
     function checkerPS1{
+
         $random = Get-Random -Maximum 100 -Minimum 1 
         $random
         ni -ItemType Directory -Name "$env:COMPUTERNAME;INFO;$random" -ErrorAction SilentlyContinue ; cd "$env:COMPUTERNAME;INFO;$random"
         
         function Get_Date{
-            $date = (Get-Date).ToString("yyyy.MM.dd")
-            $dateSortable = (Get-Date -Format u)
-            $datesort =  (Get-Date -Format T)
-            $Sorter = (Get-Date -Format d)
-        
-        $date ;$dateSortable ;$datesort ; $Sorter
-        @{
-            ToString = $date
-            Format = $dateSortable
-            Sort = $datesort
-            SortDate = $Sorter
-        }
-        
+                $date = (Get-Date).ToString("yyyy.MM.dd")
+                $dateSortable = (Get-Date -Format u)
+                $datesort =  (Get-Date -Format T)
+                $Sorter = (Get-Date -Format d)
+            
+            $date ;$dateSortable ;$datesort ; $Sorter
+            @{
+
+                ToString = $date
+                Format = $dateSortable
+                Sort = $datesort
+                SortDate = $Sorter
+
+            }
         }
         Get_Date | out-file CHECKER.log
         function LastLog{
             $Sorter+"-"+$datesort| Out-File "LastCheck.log"
         }
         LastLog
+
         function Check{
-            
             "-------------------------------------------"
             systeminfo.exe | Out-File systeminfo.sys -Verbose
             "-------------------------------------------"
             Get-PSDrive | Out-File PSDrive.sys -Verbose
             "-------------------------------------------"
-            Get-Service | Format-Custom | Out-File Service.sys -Verbose
             "-------------------------------------------"
             Get-Process | Out-File Process.sys -Verbose
             "-------------------------------------------"
@@ -203,10 +211,62 @@ function check{
             "-------------------------------------------"
             ([System.Security.Principal.WindowsIdentity]::GetCurrent()).name | Out-File CurrentUser.sys
             "-------------------------------------------"        
+            "-------------------------------------------"  
             }
-            
+
+$CodigoC = @"
+
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+ 
+public static class User32
+{
+    [DllImport("user32.dll", CharSet=CharSet.Auto)]
+        public static extern bool MessageBox(
+            IntPtr hWnd,     /// Parent window handle 
+            String text,     /// Text message to display
+            String caption,  /// Window caption
+            int options);    /// MessageBox type
+}
+
+"@
+
+    function ask{
+        Add-Type -TypeDefinition $CodigoC -ErrorAction SilentlyContinue
+        [System.Windows.MessageBox]::Show('continuen command: check?','Game input','YesNoCancel','Warning') |%{
+            if($_ -eq "Yes"){ls}
+            elseif($_ -eq "No"){ps}
+            else{$_ ; break}
+        }
+    }
         #################
         Check ;
+        #################
+        if(($psversiontable.PSVersion.major)-gt 5){
+            write-host "POWERSHELL VERSION GRATHER THAN 5.0.0" -ForegroundColor Magenta
+          }
+          elseif(($psversiontable.PSVersion.major)-lt 7){
+            ask ;
+            Get-Service | Format-Custom | Out-File Service.sys -Verbose
+            "-------------------------------------------"
+            $iniciossesion = Get-EventLog -LogName Security -ComputerName $env:COMPUTERNAME -InstanceId 4624 |
+            ForEach-Object {
+              # Convertir el contenido del log en un objeto
+              [PSCustomObject]@{
+                  Time = $_.TimeGenerated
+                  Usuario = "{0}\{1}" -f $_.ReplacementStrings[5], $_.ReplacementStrings[6]
+                  Type = $_.ReplacementStrings[10]
+                  Path = $_.ReplacementStrings[17]
+              }
+            }   
+            $iniciossesion | Sort-Object Usuario -Descending | Group-Object -Property Usuario | Format-Custom | Out-File " account was successfully logged on.sys"
+            "-------------------------------------------"
+          }
+          else{
+            write-host "info: " -ForegroundColor Yellow -nonewline;write-host "CAN'T CHECK POWERSHELL VERSION" -ForegroundColor Magenta ; continue
+          }
+        #################
         action  
         #################
         Set-Location ..;
@@ -272,14 +332,12 @@ function ipview{
             "$nameip2_2" = $ip2_2
         }
     }
-    
     function ipcann {
        myip1 | Out-GridView
     }
     function ipreseolver{
         myip2 | Out-GridView
     }
-    
     function command{
     
         Read-Host "IP VIEW:>"|ForEach-Object{
@@ -311,7 +369,7 @@ function ipview{
     }
 }
 function updateconsole{
-    iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") -Verbose
+    iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/Interactive%20Console.ps1") -Verbose
 }
 function removecheckers {
 $rootPath = $env:USERPROFILE
@@ -320,7 +378,6 @@ $rootPath = $env:USERPROFILE
     }
 }
 function commands{
-
     Write-Host "__________________________________________________________________"
     Write-Host "AUTHOR      : krip4us@github.com" -ForegroundColor Green 
     Write-Host "NAME        : interactive console for starting powershel" -ForegroundColor Red
@@ -330,7 +387,6 @@ function commands{
     Write-Host "__________________________________________________________________
 COMMANDS:
 ---------"
-
     [PSCustomObject]@{
         "getstart" = "display the first message that you see"
         "tras" = "remove last access time file"
@@ -338,7 +394,7 @@ COMMANDS:
         "view" = "get content of last access time file"
         "findex"= "find a domain name or ip"
         "check" = "check you system"
-        "viewcheck" = "view the last checker file compressed"
+        "viewcheck" = "view the last checker file compressed. (REQUIRED: command->'check'run before)"
         "removecheckers" = "remove all last checker files"
         "ipview" = "see ip public"
         "updateconsole" = "update interactive console"
