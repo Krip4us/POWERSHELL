@@ -234,7 +234,7 @@ public static class User32
 
     function ask{
         Add-Type -TypeDefinition $CodigoC -ErrorAction SilentlyContinue
-        [System.Windows.MessageBox]::Show('continuen command: check?','Game input','YesNoCancel','Warning') |%{
+        [System.Windows.MessageBox]::Show("continuen command: check?","Game input","YesNoCancel","Warning") |%{
             if($_ -eq "Yes"){ls}
             elseif($_ -eq "No"){ps}
             else{$_ ; break}
@@ -264,7 +264,7 @@ public static class User32
             "-------------------------------------------"
           }
           else{
-            write-host "info: " -ForegroundColor Yellow -nonewline;write-host "CAN'T CHECK POWERSHELL VERSION" -ForegroundColor Magenta ; continue
+            write-host "info: " -ForegroundColor Yellow -nonewline;write-host "CAN"T CHECK POWERSHELL VERSION" -ForegroundColor Magenta ; continue
           }
         #################
         action  
@@ -394,7 +394,7 @@ COMMANDS:
         "view" = "get content of last access time file"
         "findex"= "find a domain name or ip"
         "check" = "check you system"
-        "viewcheck" = "view the last checker file compressed. (REQUIRED: command->'check'run before)"
+        "viewcheck" = "view the last checker file compressed. (REQUIRED: command->"check"run before)"
         "removecheckers" = "remove all last checker files"
         "ipview" = "see ip public"
         "updateconsole" = "update interactive console"
