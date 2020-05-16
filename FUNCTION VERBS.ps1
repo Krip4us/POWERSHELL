@@ -23,11 +23,12 @@ function verbos{
 while(1){
     #listamos todos los verbos q en total son 15
     $todos = ((verbos | Get-Member))[4..19] # del member 4 qUe es el primer verbo al 19 qUe es el Ultimo
-    $num = Get-Random -Minimum 0 -Maximum 16 # nUmero aleatorio qUe indicara el verbo qUe pregUntara
+    $num = Get-Random -Minimum 0 -Maximum 14 # nUmero aleatorio qUe indicara el verbo qUe pregUntara
     
     $todosName = $todos.Name #seleccionamos el objeto nombre qUe hace referencia al verbo en infinitivo
     $verb = $todosName[$num] #seleccionamos el verbo qUe vamos ha pregUntar
 
+    #cada resultado se guarda en una varible llamado "col" que hace referencia a cada columna
     $darch = ((verbos | Select-Object $verb).$verb)
     $col1 = $darch[0] # past simple
     $col2 = $darch[1] #past participle
