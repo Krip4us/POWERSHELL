@@ -45,7 +45,7 @@ function getstart{
     else {
         renew ; starter
     }
-    }
+}
 function tasker {
     function test{
         if (!(Test-Path $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 ) -eq "True") {
@@ -57,10 +57,9 @@ function tasker {
             Write-Host ".\injection.ps1 exist" 
             $test = "ok"
         }
-        }
-        
+    } 
     start-process powershell{ Invoke-Expression $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 }
-        }
+}
 if (((view).count -gt 19)-eq "True") {
     tasker
 }
@@ -69,111 +68,99 @@ else {
     Write-Host "LastAccessTime file length less than 20"
 }
 getstart
-
 function findex{
     function ipfind{
-        Read-Host "ip to find: help(ip examples...)>" |ForEach-Object{
-       if ($_ -eq "help") {
+        Read-Host "ip to find:help(ip examples...)>" |ForEach-Object{
+            if ($_ -eq "help") {
   
-           $GOOGLE = (ping "www.google.com" -n 1)
-           $GOOGLE_ip = (($GOOGLE).split("[").split("]")[2])
-  
-           $GMAIL = (ping "www.gmail.com" -n 1)
-           $GMAIL_IP = (($GMAIL).split("[").split("]")[2])
-  
-           $OUTLOOK =  (ping "www.outlook.com" -n 1)
-           $OUTLOOK_IP = (($OUTLOOK).split("[").split("]")[2])
-  
-           [ordered]@{
-  
-               "GOOGLE.COM" = $GOOGLE_ip
-               "GMAIL" = $GMAIL_IP
-               "OUTLOOK" = $OUTLOOK_IP
-  
-           }
-       }
-  
-    else {
-        $baseURL = "https://whois.arin.net/rest"
-        $ip = $_
-        $url = "$baseUrl/ip/$ip"
-        $r = Invoke-RestMethod  $url 
-        $r.net.name | Out-GridView
-  
-    }
-   }
+                $GOOGLE = (ping "www.google.com" -n 1)
+                $GOOGLE_ip = (($GOOGLE).split("[").split("]")[2])
+        
+                $GMAIL = (ping "www.gmail.com" -n 1)
+                $GMAIL_IP = (($GMAIL).split("[").split("]")[2])
+        
+                $OUTLOOK =  (ping "www.outlook.com" -n 1)
+                $OUTLOOK_IP = (($OUTLOOK).split("[").split("]")[2])
+        
+                [ordered]@{
+        
+                    "GOOGLE.COM" = $GOOGLE_ip
+                    "GMAIL" = $GMAIL_IP
+                    "OUTLOOK" = $OUTLOOK_IP
+        
+                }
+            }
+            else {
+                $baseURL = "https://whois.arin.net/rest"
+                $ip = $_
+                $url = "$baseUrl/ip/$ip"
+                $r = Invoke-RestMethod  $url 
+                $r.net.name | Out-GridView
+            }
+        }    
    }
 function domainfind{
-  
-      Read-Host "domain name=>www.example.com:>"|ForEach-Object{
+    Read-Host "domain name=>www.example.com:>"|ForEach-Object{
         $ping = ping $_ -n 1
         $pingip = (($ping).split("[").split("]")[2])
-        }
-
-        $pingip| Out-GridView
-}
-  function command{
-  
-      Read-Host "command to use:>"|ForEach-Object{
-  
-      if ($_ -eq "find a ip") {
-        while (1) {
-            domainfind            
-            }
-        }
-     elseif ($_ -eq "find a domain") {
-        while (1) {
-            ipfind
-        }
-     }
-     elseif($_ -eq "exit"){
-        break;
-     }
-     else {
-        [ordered]@{
-            "find a ip" = "you put a DOMAIN NAME and resolve the IP"
-            "find a domain" = "you put a IP ADRESS and resolve the IP"
-            "exit" = "exit interactive console"
-            } 
-        }
     }
+    $pingip| Out-GridView
 }
-  
+function command{
+    Read-Host "command to use:>"|ForEach-Object{
+
+    if ($_ -eq "find a ip") {
+      while (1) {
+          domainfind            
+          }
+      }
+   elseif ($_ -eq "find a domain") {
+      while (1) {
+          ipfind
+      }
+   }
+   elseif($_ -eq "exit"){
+      break;
+   }
+   else {
+      [ordered]@{
+          "find a ip" = "you put a DOMAIN NAME and resolve the IP"
+          "find a domain" = "you put a IP ADRESS and resolve the IP"
+          "exit" = "exit interactive console"
+          } 
+      }
+  }
+}
   while (1) {
-  
       command
-  
   }
 }
 function check{
     function checkerPS1{
-
         $random = Get-Random -Maximum 100 -Minimum 1 
         $random
         ni -ItemType Directory -Name "$env:COMPUTERNAME;INFO;$random" -ErrorAction SilentlyContinue ; cd "$env:COMPUTERNAME;INFO;$random"
         
         function Get_Date{
-                $date = (Get-Date).ToString("yyyy.MM.dd")
-                $dateSortable = (Get-Date -Format u)
-                $datesort =  (Get-Date -Format T)
-                $Sorter = (Get-Date -Format d)
-            
-            $date ;$dateSortable ;$datesort ; $Sorter
-            @{
-
-                ToString = $date
-                Format = $dateSortable
-                Sort = $datesort
-                SortDate = $Sorter
-
-            }
+            $date = (Get-Date).ToString("yyyy.MM.dd")
+            $dateSortable = (Get-Date -Format u)
+            $datesort =  (Get-Date -Format T)
+            $Sorter = (Get-Date -Format d)
+        
+        $date ;$dateSortable ;$datesort ; $Sorter
+        @{
+            ToString = $date
+            Format = $dateSortable
+            Sort = $datesort
+            SortDate = $Sorter
+        }
+        
         }
         Get_Date | out-file CHECKER.log
         function LastLog{
             $Sorter+"-"+$datesort| Out-File "LastCheck.log"
         }
         LastLog
-
         function Check{
             "-------------------------------------------"
             systeminfo.exe | Out-File systeminfo.sys -Verbose
@@ -206,69 +193,19 @@ function check{
             "-------------------------------------------"
             wbadmin get versions | out-file DiskVersions.sys
         }
-               
+    
         function action{
             "-------------------------------------------"
             ([System.Security.Principal.WindowsIdentity]::GetCurrent()).name | Out-File CurrentUser.sys
-            "-------------------------------------------"        
             "-------------------------------------------"  
-            }
-
-$CodigoC = @"
-
-using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
- 
-public static class User32
-{
-    [DllImport("user32.dll", CharSet=CharSet.Auto)]
-        public static extern bool MessageBox(
-            IntPtr hWnd,     /// Parent window handle 
-            String text,     /// Text message to display
-            String caption,  /// Window caption
-            int options);    /// MessageBox type
-}
-
-"@
-
-    function ask{
-        Add-Type -TypeDefinition $CodigoC -ErrorAction SilentlyContinue
-        [System.Windows.MessageBox]::Show("continuen command: check?","Game input","YesNoCancel","Warning") |%{
-            if($_ -eq "Yes"){ls}
-            elseif($_ -eq "No"){ps}
-            else{$_ ; break}
+            "-------------------------------------------"
         }
-    }
+    
         #################
         Check ;
-        #################
-        if(($psversiontable.PSVersion.major)-gt 5){
-            write-host "POWERSHELL VERSION GRATHER THAN 5.0.0" -ForegroundColor Magenta
-          }
-          elseif(($psversiontable.PSVersion.major)-lt 7){
-            ask ;
-            Get-Service | Format-Custom | Out-File Service.sys -Verbose
-            "-------------------------------------------"
-            $iniciossesion = Get-EventLog -LogName Security -ComputerName $env:COMPUTERNAME -InstanceId 4624 |
-            ForEach-Object {
-              # Convertir el contenido del log en un objeto
-              [PSCustomObject]@{
-                  Time = $_.TimeGenerated
-                  Usuario = "{0}\{1}" -f $_.ReplacementStrings[5], $_.ReplacementStrings[6]
-                  Type = $_.ReplacementStrings[10]
-                  Path = $_.ReplacementStrings[17]
-              }
-            }   
-            $iniciossesion | Sort-Object Usuario -Descending | Group-Object -Property Usuario | Format-Custom | Out-File " account was successfully logged on.sys"
-            "-------------------------------------------"
-          }
-          else{
-            write-host "info: " -ForegroundColor Yellow -nonewline;write-host "CAN"T CHECK POWERSHELL VERSION" -ForegroundColor Magenta ; continue
-          }
-        #################
         action  
         #################
+        
         Set-Location ..;
         Compress-Archive -Path  "$env:COMPUTERNAME;INFO;$random" -DestinationPath  "$env:COMPUTERNAME;INFO;$random.zip";
         if ((Test-Path "$env:COMPUTERNAME;INFO;$random.zip")-eq "True") {
@@ -279,8 +216,8 @@ public static class User32
             Write-Host "checker complete but not compressed" -ForegroundColor Red
             Start-Sleep -Seconds 6
         }
-        
     }
+
     Read-Host "start checker.ps1?(y/n)"|ForEach-Object{
         if ($_ -eq "y") {
             checkerPS1
@@ -290,8 +227,8 @@ public static class User32
         }
         else {
             Write-Warning "connot start" 
+        }
     }
-}
 }
 function viewcheck {
     $file = ((ls ("G:\FileHistory","$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
@@ -300,14 +237,13 @@ function viewcheck {
     if ((Test-Path -Path $newname)-eq "True") {
         rm $file
         Set-Location $newname
-         cd ($newname.Split("\")[2])
+        cd ($newname.Split("\")[3])
         ls
         Write-Host (gc .\CHECKER.log)[0] -ForegroundColor Green
     }
     else {
         Write-Warning "Cannot view check on:: $file"
     }
-  
 }
 function ipview{
     function myip1{
@@ -332,12 +268,14 @@ function ipview{
             "$nameip2_2" = $ip2_2
         }
     }
+    
     function ipcann {
        myip1 | Out-GridView
     }
     function ipreseolver{
         myip2 | Out-GridView
     }
+    
     function command{
     
         Read-Host "IP VIEW:>"|ForEach-Object{
@@ -369,7 +307,7 @@ function ipview{
     }
 }
 function updateconsole{
-    iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/Interactive%20Console.ps1") -Verbose
+    iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") -Verbose
 }
 function removecheckers {
 $rootPath = $env:USERPROFILE
@@ -378,15 +316,6 @@ $rootPath = $env:USERPROFILE
     }
 }
 function commands{
-    Write-Host "__________________________________________________________________"
-    Write-Host "AUTHOR      : krip4us@github.com" -ForegroundColor Green 
-    Write-Host "NAME        : interactive console for starting powershel" -ForegroundColor Red
-    Write-Host "NAME PS1    : profile.ps1" -ForegroundColor Red
-    Write-Host "EXTENSION   : .ps1 (powershell scripts file extension predefined )" -ForegroundColor Blue
-    Write-Host "PATH        : $env:USERPROFILE\Documents\WindowsPowershell" -ForegroundColor Magenta
-    Write-Host "__________________________________________________________________
-COMMANDS:
----------"
     [PSCustomObject]@{
         "getstart" = "display the first message that you see"
         "tras" = "remove last access time file"
@@ -394,7 +323,7 @@ COMMANDS:
         "view" = "get content of last access time file"
         "findex"= "find a domain name or ip"
         "check" = "check you system"
-        "viewcheck" = "view the last checker file compressed. (REQUIRED: command->"check"run before)"
+        "viewcheck" = "view the last checker file compressed"
         "removecheckers" = "remove all last checker files"
         "ipview" = "see ip public"
         "updateconsole" = "update interactive console"
