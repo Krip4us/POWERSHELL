@@ -22,7 +22,8 @@ function tras{
     Write-Host "file lastaccesstime deleted!!!" -ForegroundColor Red
 }
 function getstart{
-    function starter{        
+    function starter{
+        
         $date = date
         $view = view
         $viewlenth = (view).count
@@ -45,7 +46,7 @@ function getstart{
     else {
         renew ; starter
     }
-}
+    }
 function tasker {
     function test{
         if (!(Test-Path $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 ) -eq "True") {
@@ -57,9 +58,10 @@ function tasker {
             Write-Host ".\injection.ps1 exist" 
             $test = "ok"
         }
-    } 
+        }
+        
     start-process powershell{ Invoke-Expression $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 }
-}
+        }
 if (((view).count -gt 19)-eq "True") {
     tasker
 }
@@ -68,71 +70,79 @@ else {
     Write-Host "LastAccessTime file length less than 20"
 }
 getstart
+
 function findex{
     function ipfind{
-        Read-Host "ip to find:help(ip examples...)>" |ForEach-Object{
-            if ($_ -eq "help") {
+        Read-Host "ip to find: help(ip examples...)>" |ForEach-Object{
+       if ($_ -eq "help") {
   
-                $GOOGLE = (ping "www.google.com" -n 1)
-                $GOOGLE_ip = (($GOOGLE).split("[").split("]")[2])
-        
-                $GMAIL = (ping "www.gmail.com" -n 1)
-                $GMAIL_IP = (($GMAIL).split("[").split("]")[2])
-        
-                $OUTLOOK =  (ping "www.outlook.com" -n 1)
-                $OUTLOOK_IP = (($OUTLOOK).split("[").split("]")[2])
-        
-                [ordered]@{
-        
-                    "GOOGLE.COM" = $GOOGLE_ip
-                    "GMAIL" = $GMAIL_IP
-                    "OUTLOOK" = $OUTLOOK_IP
-        
-                }
-            }
-            else {
-                $baseURL = "https://whois.arin.net/rest"
-                $ip = $_
-                $url = "$baseUrl/ip/$ip"
-                $r = Invoke-RestMethod  $url 
-                $r.net.name | Out-GridView
-            }
-        }    
+           $GOOGLE = (ping "www.google.com" -n 1)
+           $GOOGLE_ip = (($GOOGLE).split("[").split("]")[2])
+  
+           $GMAIL = (ping "www.gmail.com" -n 1)
+           $GMAIL_IP = (($GMAIL).split("[").split("]")[2])
+  
+           $OUTLOOK =  (ping "www.outlook.com" -n 1)
+           $OUTLOOK_IP = (($OUTLOOK).split("[").split("]")[2])
+  
+           [ordered]@{
+  
+               "GOOGLE.COM" = $GOOGLE_ip
+               "GMAIL" = $GMAIL_IP
+               "OUTLOOK" = $OUTLOOK_IP
+  
+           }
+       }
+  
+    else {
+        $baseURL = "https://whois.arin.net/rest"
+        $ip = $_
+        $url = "$baseUrl/ip/$ip"
+        $r = Invoke-RestMethod  $url 
+        $r.net.name | Out-GridView
+  
+    }
    }
+   }
+  
 function domainfind{
-    Read-Host "domain name=>www.example.com:>"|ForEach-Object{
+  
+      Read-Host "domain name=>www.example.com:>"|ForEach-Object{
         $ping = ping $_ -n 1
         $pingip = (($ping).split("[").split("]")[2])
-    }
-    $pingip| Out-GridView
-}
-function command{
-    Read-Host "command to use:>"|ForEach-Object{
+        }
 
-    if ($_ -eq "find a ip") {
-      while (1) {
-          domainfind            
-          }
-      }
-   elseif ($_ -eq "find a domain") {
-      while (1) {
-          ipfind
-      }
-   }
-   elseif($_ -eq "exit"){
-      break;
-   }
-   else {
-      [ordered]@{
-          "find a ip" = "you put a DOMAIN NAME and resolve the IP"
-          "find a domain" = "you put a IP ADRESS and resolve the IP"
-          "exit" = "exit interactive console"
-          } 
-      }
-  }
+        $pingip| Out-GridView
 }
+  
+  function command{
+  
+      Read-Host "command to use:>"|ForEach-Object{
+  
+      if ($_ -eq "find a ip") {
+        while (1) {
+            domainfind            
+            }
+        }
+     elseif ($_ -eq "find a domain") {
+        while (1) {
+            ipfind
+        }
+     }
+     else {
+        [ordered]@{
+            "find a ip" = "you put a DOMAIN NAME and resolve the IP"
+            "find a domain" = "you put a IP ADRESS and resolve the IP"
+  
+            } 
+        }
+    }
+}
+  
   while (1) {
+  
       command
+  
   }
 }
 function check{
@@ -162,11 +172,13 @@ function check{
         }
         LastLog
         function Check{
+            
             "-------------------------------------------"
             systeminfo.exe | Out-File systeminfo.sys -Verbose
             "-------------------------------------------"
             Get-PSDrive | Out-File PSDrive.sys -Verbose
             "-------------------------------------------"
+            Get-Service | Format-Custom | Out-File Service.sys -Verbose
             "-------------------------------------------"
             Get-Process | Out-File Process.sys -Verbose
             "-------------------------------------------"
@@ -193,19 +205,17 @@ function check{
             "-------------------------------------------"
             wbadmin get versions | out-file DiskVersions.sys
         }
-    
+               
         function action{
             "-------------------------------------------"
             ([System.Security.Principal.WindowsIdentity]::GetCurrent()).name | Out-File CurrentUser.sys
-            "-------------------------------------------"  
-            "-------------------------------------------"
-        }
-    
+            "-------------------------------------------"        
+            }
+            
         #################
         Check ;
         action  
         #################
-        
         Set-Location ..;
         Compress-Archive -Path  "$env:COMPUTERNAME;INFO;$random" -DestinationPath  "$env:COMPUTERNAME;INFO;$random.zip";
         if ((Test-Path "$env:COMPUTERNAME;INFO;$random.zip")-eq "True") {
@@ -216,8 +226,8 @@ function check{
             Write-Host "checker complete but not compressed" -ForegroundColor Red
             Start-Sleep -Seconds 6
         }
+        
     }
-
     Read-Host "start checker.ps1?(y/n)"|ForEach-Object{
         if ($_ -eq "y") {
             checkerPS1
@@ -227,8 +237,8 @@ function check{
         }
         else {
             Write-Warning "connot start" 
-        }
     }
+}
 }
 function viewcheck {
     $file = ((ls ("G:\FileHistory","$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
@@ -237,13 +247,14 @@ function viewcheck {
     if ((Test-Path -Path $newname)-eq "True") {
         rm $file
         Set-Location $newname
-        cd ($newname.Split("\")[3])
+         cd ($newname.Split("\")[2])
         ls
         Write-Host (gc .\CHECKER.log)[0] -ForegroundColor Green
     }
     else {
         Write-Warning "Cannot view check on:: $file"
     }
+  
 }
 function ipview{
     function myip1{
@@ -307,7 +318,7 @@ function ipview{
     }
 }
 function updateconsole{
-    iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") -Verbose
+    #iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/Interactive%20Console.ps1") -Verbose
 }
 function removecheckers {
 $rootPath = $env:USERPROFILE
@@ -316,6 +327,15 @@ $rootPath = $env:USERPROFILE
     }
 }
 function commands{
+    Write-Host "__________________________________________________________________"
+    Write-Host "AUTHOR      : krip4us@github.com" -ForegroundColor Green 
+    Write-Host "NAME        : interactive console for starting powershel" -ForegroundColor Red
+    Write-Host "NAME PS1    : profile.ps1" -ForegroundColor Red
+    Write-Host "EXTENSION   : .ps1 (powershell scripts file extension predefined )" -ForegroundColor Blue
+    Write-Host "PATH        : $env:USERPROFILE\Documents\WindowsPowershell" -ForegroundColor Magenta
+    Write-Host "__________________________________________________________________
+COMMANDS:
+---------"
     [PSCustomObject]@{
         "getstart" = "display the first message that you see"
         "tras" = "remove last access time file"
