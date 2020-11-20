@@ -1,11 +1,3 @@
-#TENEIS QUE TENER HABILITADO LA EJECUCION DE SCRIPTS ==> start-process powershell{Set-ExecutionPolicy Unrestricted}-verb runas
-if (!(Test-Path -Path $Profile.CurrentUserAllHosts)) {
-    Write-Host "file exist"
-}
-else {
-    New-Item -Path $Profile.CurrentUserAllHosts -ItemType File -Force
-}
-'
 Clear-Host;Set-Location $env:USERPROFILE
 function date{
     (Get-Date).ToString("dd.MM.yyyy/HH:mm:ss"); 
@@ -199,8 +191,6 @@ function check{
             "-------------------------------------------"
             Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\" | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
             "-------------------------------------------"
-            nmap.exe localhost | Out-File nmap.sys
-            "-------------------------------------------"
             whoami /all | out-file whoami.sys
             "-------------------------------------------"
             wbadmin get versions | out-file DiskVersions.sys
@@ -241,7 +231,7 @@ function check{
 }
 }
 function viewcheck {
-    $file = ((ls ("$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
+    $file = ((ls ("G:\FileHistory","$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
     $newname = $file.split(".")[0]
     Expand-Archive -Path $file -DestinationPath $newname
     if ((Test-Path -Path $newname)-eq "True") {
@@ -326,6 +316,20 @@ $rootPath = $env:USERPROFILE
         Remove-Item $_.FullName -Recurse -Force -Verbose -Confirm:$true
     }
 }
+
+function getconnections{
+    Get-NetTCPConnection | ForEach-Object{
+        [PSCustomObject] @{
+            "local adrress" = $_.LocalAddress
+            "local port" = $_.LocalPort
+            "remote adress" = $_.RemoteAddress
+            "remote port" = $_.RemotePort
+            "process id" = $_.OwningProcess
+            "process name" = (Get-Process -id $_.OwningProcess).Name
+        } | Format-Table
+        }
+}
+
 function commands{
     Write-Host "__________________________________________________________________"
     Write-Host "AUTHOR      : krip4us@github.com" -ForegroundColor Green 
@@ -342,14 +346,12 @@ COMMANDS:
         "renew" = "renew last access time file"
         "view" = "get content of last access time file"
         "findex"= "find a domain name or ip"
+        "getconnections" = "check your remote connections"
         "check" = "check you system"
         "viewcheck" = "view the last checker file compressed"
         "removecheckers" = "remove all last checker files"
         "ipview" = "see ip public"
         "updateconsole" = "update interactive console"
+       
     }
 }
-'| Add-Content -Path $Profile.CurrentUserAllHosts -Encoding Default
-<# FIN DEL SCRIPT DE INTERACTIVE CONSOLE
-.AUTHOR = krip4Us@github.com
-#>
