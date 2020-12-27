@@ -1,12 +1,9 @@
-``` powershell
 [Int]$num=5
 $num
 $num.GetType()
 
-
 [char]$numChar=1
 $numChar.GetType()
-
 
 #Crear una variable con el valor 20 indicando el tipo entero para una de las variables y el tipo carácter para la otra, después ver el contenido y comprobar el tipo después
     [int]$cantidad=20
@@ -61,4 +58,3 @@ $numChar.GetType()
     $arrayBase64[0]
     #Último carácter
     $arrayBase64[$arrayBase64.Length-1]
-```
