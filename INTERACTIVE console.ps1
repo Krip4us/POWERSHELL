@@ -191,6 +191,8 @@ function check{
             "-------------------------------------------"
             Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\" | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
             "-------------------------------------------"
+            nmap.exe localhost | Out-File nmap.sys
+            "-------------------------------------------"
             whoami /all | out-file whoami.sys
             "-------------------------------------------"
             wbadmin get versions | out-file DiskVersions.sys
@@ -307,13 +309,67 @@ function ipview{
         command
     }
 }
+
 function updateconsole{
-    iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") -Verbose:$true
+    iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") -Verbose
 }
+
 function removecheckers {
 $rootPath = $env:USERPROFILE
     (ls $rootPath | Where-Object name -Match "$env:COMPUTERNAME;INFO;" | Select-Object FullName) | ForEach-Object{
         Remove-Item $_.FullName -Recurse -Force -Verbose -Confirm:$true
+    }
+}
+
+function pingrank{
+
+function getip{
+
+  $var =  ((( (ipconfig)-match "IPv4")-split(":")-notmatch "Direcci�n IPv4 de configuraci�n autom�tica")-notmatch "Direcci�n IP")[1]
+  $var
+    if ($var -notlike $null)
+    {
+        $1 = $var.Split(".")[0]
+        $2 =$var.Split(".")[1]
+        $3 = $var.Split(".")[2]
+        $4 = $var.Split(".")[3]
+
+         $red =$1 + "." + $2 + "." + $3 + "."
+         $red
+    }
+    (1..35)|ForEach-Object{
+        "$red" + $_ | ForEach-Object{
+          ping -n 1 $_
+        }
+     }
+
+}
+}
+
+Function clscache
+{
+    Param(
+        [Parameter(
+            ParameterSetName='Mode'
+        )]
+        [string]
+        $mode
+    )
+    $PSCmdlet.ParameterSetName
+
+    if ($mode -eq "several") {
+        Clear-RecycleBin -Verbose:$true
+            Write-Host 'clearing windows bin'
+    }
+    elseif($mode -eq "brute") {
+        Clear-BCCache -Verbose:$true
+            Write-Host "clearing cache" -ForegroundColor Green
+        Clear-EventLog -logname * -Verbose:$true
+             Write-Host "clearing events" -ForegroundColor Green
+        
+    }
+    else {
+        Write-Warning "use :>   clscache -mode [several / brute]"
     }
 }
 
@@ -326,7 +382,7 @@ function getconnections{
             "remote port" = $_.RemotePort
             "process id" = $_.OwningProcess
             "process name" = (Get-Process -id $_.OwningProcess).Name
-        } | Format-Table
+        } | Format-List
         }
 }
 
@@ -346,12 +402,12 @@ COMMANDS:
         "renew" = "renew last access time file"
         "view" = "get content of last access time file"
         "findex"= "find a domain name or ip"
-        "getconnections" = "check your remote connections"
         "check" = "check you system"
         "viewcheck" = "view the last checker file compressed"
         "removecheckers" = "remove all last checker files"
         "ipview" = "see ip public"
+        "clscache" = "clear cache","parameters(several / brute)"
+        "getconnections" = "dislay all your localhost connections"
         "updateconsole" = "update interactive console"
-       
     }
 }
