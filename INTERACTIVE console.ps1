@@ -366,7 +366,14 @@ Function clscache
             Write-Host "clearing cache" -ForegroundColor Green
         Clear-EventLog -logname * -Verbose:$true
              Write-Host "clearing events" -ForegroundColor Green
-        
+           [GC]::Collect()
+        RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255      
+        ls -Recurse -Force -Path $env:TEMP |%{
+            rm $_.fullname -Recurse -Force
+        }
+        ls -Recurse -Force -Path C:\Windows\Temp |%{
+             rm $_.fullname -Recurse -Force
+        }
     }
     else {
         Write-Warning "use :>   clscache -mode [several / brute]"
