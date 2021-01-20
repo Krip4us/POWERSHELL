@@ -1,12 +1,21 @@
-# POWERSHELL
-scripts with powershell
+### `POWERSHELL`
+> version JAN21 == 1.16.20
+✔️ windows (home , pro)
+❌windows SERVER
+❌ linux
 
-+MORE HELP IN https://microsoft.com/powershell |
-+MORE HELP IN https://docs.microsoft.com/es-es/powershell/scripting/powershell-scripting?view=powershell-6 ||
-_____________________________________________________________________________________________________________
-GET POWERSHELL FOR ==> Windows:32-BIT(https://github.com/PowerShell/PowerShell/releases/download/v6.1.1/PowerShell-6.1.1-win-x86.zip)
-____________________________________________________________________________________________________________________________________
-GET POWERSHELL FOR ==> Windows:64-BIT(https://github.com/PowerShell/PowerShell/releases/download/v6.1.1/PowerShell-6.1.1-win-x64.zip)
-_____________________________________________________________________________________________________________________________________
-GET POWERSHELL FOR ==> macOS:64-BIT(https://github.com/PowerShell/PowerShell/releases/download/v6.1.1/powershell-6.1.1-linux-x64.tar.gz)
-________________________________________________________________________________________________________________________________________
+
+✔️ 💯% FIABLE
+
+✔️ 💯% CONTROL DE ERRORES
+
+✔️ 💯% POWERSHELL 5.0
+
+- `iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") -Verbose`
+- `getstart`
+
+
+
+
+
+![Captura de pantalla (36)](https://user-images.githubusercontent.com/44360877/105176468-95330b00-5b25-11eb-893d-be9a7469b75e.png)
