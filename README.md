@@ -11,7 +11,10 @@
 
 ✔️ 💯% POWERSHELL 5.0
 
-- `iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") -Verbose`
+- `iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") ; 
+    $content = ( Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1" -UseBasicParsing | Select-Object content);
+    if (!(ls $env:USERPROFILE\Documents\WindowsPowershell).Exists -eq $true) {mkdir "$env:USERPROFILE\Documents\WindowsPowershell\" ;
+    $content.content | Out-File "$env:USERPROFILE\Documents\WindowsPowershell\profile.ps1"}else {$Error}`
 - `getstart`
 
 
