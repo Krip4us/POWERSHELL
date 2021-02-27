@@ -393,6 +393,13 @@ function getconnections{
         }
 }
 
+function downloadinteractiveconsole(){
+    iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") ; 
+    $content = ( Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1" -UseBasicParsing | Select-Object content);
+    if (!(ls $env:USERPROFILE\Documents\WindowsPowershell).Exists -eq $true) {mkdir "$env:USERPROFILE\Documents\WindowsPowershell\" ;
+    $content.content | Out-File "$env:USERPROFILE\Documents\WindowsPowershell\profile.ps1"}else {$Error}
+}
+
 function commands{
     Write-Host "__________________________________________________________________"
     Write-Host "AUTHOR      : krip4us@github.com" -ForegroundColor Green 
@@ -415,6 +422,7 @@ COMMANDS:
         "ipview" = "see ip public"
         "clscache" = "clear cache","parameters(several / brute)"
         "getconnections" = "dislay all your localhost connections"
+        "downloadinteractiveconsole" = "OUT FILE THIS SCRIPT TO: ENV:USERPROFILE\DOCUMENTS\WINDOWSPOWERSHELL\profile.ps1"
         "updateconsole" = "update interactive console"
     }
 }
