@@ -364,7 +364,7 @@ Function clscache
     elseif($mode -eq "brute") {
         Clear-BCCache -Verbose:$true
             Write-Host "clearing cache" -ForegroundColor Green
-        Clear-EventLog -logname * -Verbose:$true
+        Clear-EventLog -LogName Application,HardwareEvents,'Internet Explorer',OAlerts,Security,System,'Windows PowerShell' -ComputerName . -Verbose:$true
              Write-Host "clearing events" -ForegroundColor Green
            [GC]::Collect()
         RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255      
