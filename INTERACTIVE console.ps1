@@ -233,7 +233,7 @@ function check{
 }
 }
 function viewcheck {
-    $file = ((ls ("G:\FileHistory","$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
+    $file = ((ls ("$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
     $newname = $file.split(".")[0]
     Expand-Archive -Path $file -DestinationPath $newname
     if ((Test-Path -Path $newname)-eq "True") {
