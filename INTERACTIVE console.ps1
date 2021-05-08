@@ -191,7 +191,7 @@ function check{
             "-------------------------------------------"
             Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\" | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
             "-------------------------------------------"
-            nmap.exe localhost | Out-File nmap.sys
+            <#OPTIONAL#>   #nmap.exe localhost | Out-File nmap.sys
             "-------------------------------------------"
             whoami /all | out-file whoami.sys
             "-------------------------------------------"
@@ -233,15 +233,12 @@ function check{
 }
 }
 function viewcheck {
-    $file = ((ls ("$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
-    $newname = $file.split(".")[0]
-    Expand-Archive -Path $file -DestinationPath $newname
+    $file = (( ls("$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)
+    $newname = ($file.split("."))[0]
+    Expand-Archive -Path "$file" -DestinationPath "$newname"
     if ((Test-Path -Path $newname)-eq "True") {
         rm $file
         Set-Location $newname
-         cd ($newname.Split("\")[2])
-        ls
-        Write-Host (gc .\CHECKER.log)[0] -ForegroundColor Green
     }
     else {
         Write-Warning "Cannot view check on:: $file"
