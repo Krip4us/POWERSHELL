@@ -16,7 +16,7 @@ function tras{
 function getstart{
     function starter{
         
-        $date = date
+        $date = Get-date
         $view = view
         $viewlenth = (view).count
         gc $env:USERPROFILE\LastAccessTime
@@ -38,7 +38,7 @@ function getstart{
     else {
         renew ; starter
     }
-    }
+}
 function tasker {
     function test{
         if (!(Test-Path $env:USERPROFILE\Documents\WindowsPowerShell\Scripts\injection.ps1 ) -eq "True") {
@@ -66,36 +66,34 @@ getstart
 function findex{
     function ipfind{
         Read-Host "ip to find: help(ip examples...)>" |ForEach-Object{
-       if ($_ -eq "help") {
+           if ($_ -eq "help") {
   
-           $GOOGLE = (ping "www.google.com" -n 1)
-           $GOOGLE_ip = (($GOOGLE).split("[").split("]")[2])
+               $GOOGLE = (ping "www.google.com" -n 1)
+               $GOOGLE_ip = (($GOOGLE).split("[").split("]")[2])
   
-           $GMAIL = (ping "www.gmail.com" -n 1)
-           $GMAIL_IP = (($GMAIL).split("[").split("]")[2])
+               $GMAIL = (ping "www.gmail.com" -n 1)
+               $GMAIL_IP = (($GMAIL).split("[").split("]")[2])
   
-           $OUTLOOK =  (ping "www.outlook.com" -n 1)
-           $OUTLOOK_IP = (($OUTLOOK).split("[").split("]")[2])
+               $OUTLOOK =  (ping "www.outlook.com" -n 1)
+               $OUTLOOK_IP = (($OUTLOOK).split("[").split("]")[2])
   
-           [ordered]@{
-  
-               "GOOGLE.COM" = $GOOGLE_ip
-               "GMAIL" = $GMAIL_IP
-               "OUTLOOK" = $OUTLOOK_IP
-  
+               [ordered]@{
+                   "GOOGLE.COM" = $GOOGLE_ip
+                   "GMAIL" = $GMAIL_IP
+                   "OUTLOOK" = $OUTLOOK_IP
+               }
            }
-       }
   
-    else {
-        $baseURL = "https://whois.arin.net/rest"
-        $ip = $_
-        $url = "$baseUrl/ip/$ip"
-        $r = Invoke-RestMethod  $url 
-        $r.net.name | Out-GridView
+        else {
+            $baseURL = "https://whois.arin.net/rest"
+            $ip = $_
+            $url = "$baseUrl/ip/$ip"
+            $r = Invoke-RestMethod  $url 
+            $r.net.name | Out-GridView
   
+        }
     }
-   }
-   }
+    }
   
 function domainfind{
   
@@ -104,10 +102,10 @@ function domainfind{
         $pingip = (($ping).split("[").split("]")[2])
         }
 
-        $pingip| Out-GridView
+        $pingip | Out-GridView
 }
   
-  function command{
+  function commanders{
   
       Read-Host "command to use:>"|ForEach-Object{
   
@@ -133,7 +131,7 @@ function domainfind{
   
   while (1) {
   
-      command
+      commanders
   
   }
 }
@@ -141,7 +139,7 @@ function check{
     function checkerPS1{
         $random = Get-Random -Maximum 100 -Minimum 1 
         $random
-        ni -ItemType Directory -Name "$env:COMPUTERNAME;INFO;$random" -ErrorAction SilentlyContinue ; cd "$env:COMPUTERNAME;INFO;$random"
+        New-Item -ItemType Directory -Name "$env:COMPUTERNAME;INFO;$random" -ErrorAction SilentlyContinue ; cd "$env:COMPUTERNAME;INFO;$random"
         
         function Get_Date{
             $date = (Get-Date).ToString("yyyy.MM.dd")
@@ -178,12 +176,21 @@ function check{
             "-------------------------------------------"
             Get-Disk | Out-File Disk.sys -Verbose
             "-------------------------------------------"
-            Get-NetTCPConnection | Select * | Format-List | Out-File NetTCPConnection.sys -Verbose
+            Get-NetTCPConnection | ForEach-Object{
+                [PSCustomObject] @{
+                    "local adrress" = $_.LocalAddress
+                    "local port" = $_.LocalPort
+                    "remote adress" = $_.RemoteAddress
+                    "remote port" = $_.RemotePort
+                    "process id" = $_.OwningProcess
+                    "process name" = (Get-Process -id $_.OwningProcess).Name
+                } | Format-List
+            } | Out-File NetTCPConnection.sys -Verbose
             "-------------------------------------------"
             $wc = new-object System.Net.Webclient
             $wc.DownloadString("http://icanhazip.com/") | Out-File IPv6.sys -Verbose
             "-------------------------------------------"
-            nslookup myip.opendns.com resolver1.opendns.com | Out-File NsLookup.sys -Verbose
+            nslookup myip.opendns.com resolver1.opendns.com | Out-File MyIP.sys -Verbose
             "-------------------------------------------"
             ipconfig.exe /displaydns | Out-File displaydns.sys -Verbose
             "-------------------------------------------"
@@ -191,7 +198,7 @@ function check{
             "-------------------------------------------"
             Get-ItemProperty -Path "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\*\*\" | Where-Object { $_.FriendlyName } | Select-Object FriendlyName | Out-File USBSTOR.sys -Verbose
             "-------------------------------------------"
-            <#OPTIONAL#>   #nmap.exe localhost | Out-File nmap.sys
+            nmap.exe localhost | Out-File nmap.sys
             "-------------------------------------------"
             whoami /all | out-file whoami.sys
             "-------------------------------------------"
@@ -233,12 +240,15 @@ function check{
 }
 }
 function viewcheck {
-    $file = (( ls("$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)
-    $newname = ($file.split("."))[0]
-    Expand-Archive -Path "$file" -DestinationPath "$newname"
+    $file = ((Get-ChildItem ("G:\FileHistory","$env:USERPROFILE") |Where-Object Extension -EQ ".zip" | Sort-Object -Property LastWriteTime -Descending | Select-Object FullName ).FullName)[0]
+    $newname = $file.split(".")[0]
+    Expand-Archive -Path $file -DestinationPath $newname
     if ((Test-Path -Path $newname)-eq "True") {
-        rm $file
+        Remove-Item $file
         Set-Location $newname
+         Set-Location ($newname.Split("\")[2])
+        ls
+        Write-Host (Get-Content .\CHECKER.log)[0] -ForegroundColor Green
     }
     else {
         Write-Warning "Cannot view check on:: $file"
@@ -276,34 +286,34 @@ function ipview{
         myip2 | Out-GridView
     }
     
-    function command{
+    function commanders{
     
         Read-Host "IP VIEW:>"|ForEach-Object{
     
-        if ($_ -eq "icann") {
-    
-            ipcann;
-            write-host "you choose:$_" -ForegroundColor Green
+            if ($_ -eq "icann") {
+        
+                ipcann;
+                write-host "you choose:$_" -ForegroundColor Green
+            }
+            elseif ($_ -eq "ipresolver") {
+            
+                ipreseolver;
+                write-host "you choose:$_" -ForegroundColor Green
+            }
+            
+            else {
+            
+                [ordered]@{
+            
+                    "ipresolver" = "myip.opendns.com","resolver1.opendns.com"
+                    "icann" = "http://icanhazip.com/"
+            
+                }
+            }
         }
-       elseif ($_ -eq "ipresolver") {
-    
-        ipreseolver;
-        write-host "you choose:$_" -ForegroundColor Green
-       }
-    
-       else {
-    
-           [ordered]@{
-    
-               "ipresolver" = "myip.opendns.com","resolver1.opendns.com"
-               "icann" = "http://icanhazip.com/"
-    
-           }
-       }
-    }
     }
     while (1) {
-        command
+        commanders
     }
 }
 
@@ -320,31 +330,30 @@ $rootPath = $env:USERPROFILE
 
 function pingrank{
 
-function getip{
+    function getip{
 
-  $var =  ((( (ipconfig)-match "IPv4")-split(":")-notmatch "Direcci�n IPv4 de configuraci�n autom�tica")-notmatch "Direcci�n IP")[1]
-  $var
-    if ($var -notlike $null)
-    {
-        $1 = $var.Split(".")[0]
-        $2 =$var.Split(".")[1]
-        $3 = $var.Split(".")[2]
-        $4 = $var.Split(".")[3]
+    $var =  ((( (ipconfig)-match "IPv4")-split(":")-notmatch "Direcci�n IPv4 de configuraci�n autom�tica")-notmatch "Direcci�n IP")[1]
+    $var
+        if ($var -notlike $null)
+        {
+            $1 = $var.Split(".")[0]
+            $2 =$var.Split(".")[1]
+            $3 = $var.Split(".")[2]
+            $4 = $var.Split(".")[3]
 
-         $red =$1 + "." + $2 + "." + $3 + "."
-         $red
-    }
-    (1..35)|ForEach-Object{
-        "$red" + $_ | ForEach-Object{
-          ping -n 1 $_
+            $red =$1 + "." + $2 + "." + $3 + "."
+            $red
         }
-     }
+        (1..35)|ForEach-Object{
+            "$red" + $_ | ForEach-Object{
+            ping -n 1 $_
+            }
+        }
 
-}
+    }
 }
 
-Function clscache
-{
+Function clscache{
     Param(
         [Parameter(
             ParameterSetName='Mode'
@@ -365,11 +374,11 @@ Function clscache
              Write-Host "clearing events" -ForegroundColor Green
            [GC]::Collect()
         RunDll32.exe InetCpl.cpl,ClearMyTracksByProcess 255      
-        ls -Recurse -Force -Path $env:TEMP |%{
-            rm $_.fullname -Recurse -Force
+        Get-ChildItem -Recurse -Force -Path $env:TEMP |%{
+            Remove-Item $_.fullname -Recurse -Force
         }
-        ls -Recurse -Force -Path C:\Windows\Temp |%{
-             rm $_.fullname -Recurse -Force
+        Get-ChildItem -Recurse -Force -Path C:\Windows\Temp |%{
+             Remove-Item $_.fullname -Recurse -Force
         }
     }
     else {
@@ -387,13 +396,13 @@ function getconnections{
             "process id" = $_.OwningProcess
             "process name" = (Get-Process -id $_.OwningProcess).Name
         } | Format-List
-        }
+    }
 }
 
 function downloadinteractiveconsole(){
-    iex (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") ; 
-    $content = ( Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1" -UseBasicParsing | Select-Object content);
-    if (!(ls $env:USERPROFILE\Documents\WindowsPowershell).Exists -eq $true) {mkdir "$env:USERPROFILE\Documents\WindowsPowershell\" ;
+    Invoke-Expression (new-object net.webclient).downloadstring("https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1") ; 
+    $content = ( Invoke-WebRequest -Uri "https://raw.githubusercontent.com/Krip4us/POWERSHELL/master/INTERACTIVE%20console.ps1" -UseBasicParsing | Select-Object content | Format-Custom);
+    if (!(Get-ChildItem $env:USERPROFILE\Documents\WindowsPowershell).Exists -eq $true) {mkdir "$env:USERPROFILE\Documents\WindowsPowershell\" ;
     $content.content | Out-File "$env:USERPROFILE\Documents\WindowsPowershell\profile.ps1"}else {$Error}
 }
 
